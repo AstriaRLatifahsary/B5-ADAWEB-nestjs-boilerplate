@@ -6,15 +6,23 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express'; // ✅ Tambahan
+// import { join } from 'path'; // ✅ Tambahan
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+// import themeConfig from './config/theme.json'; // ✅ Tambahan
+import { setupViewEngine } from './common/viewEngine';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  // Ubah menjadi NestExpressApplication agar bisa pakai view engine
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
+
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<AllConfigType>);
 
@@ -30,12 +38,14 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe(validationOptions));
   app.useGlobalInterceptors(
-    // ResolvePromisesInterceptor is used to resolve promises in responses because class-transformer can't do it
-    // https://github.com/typestack/class-transformer/issues/549
     new ResolvePromisesInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
 
+  // ✅ Panggil fungsi abstraksi
+  setupViewEngine(app);
+
+  // Swagger bawaan tetap dipertahankan
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('API docs')
@@ -54,6 +64,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
 
+  // Jalankan server
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 }
 void bootstrap();

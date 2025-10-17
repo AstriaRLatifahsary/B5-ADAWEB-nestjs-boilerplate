@@ -9,4 +9,9 @@ export class HomeService {
   appInfo() {
     return { name: this.configService.get('app.name', { infer: true }) };
   }
+
+  // ✅ fungsi tambahan
+  getWelcomeMessage() {
+    return 'Selamat datang di aplikasi NestJS Boilerplate dengan EJS!';
+  }
 }
