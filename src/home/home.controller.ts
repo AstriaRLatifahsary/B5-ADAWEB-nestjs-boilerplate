@@ -1,6 +1,7 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { AreaManager } from '../common/areaManager';
 import { HomeService } from './home.service';
 
 @ApiTags('Home')
@@ -8,19 +9,15 @@ import { HomeService } from './home.service';
 export class HomeController {
   constructor(private service: HomeService) {}
 
-  // ✅ Endpoint API lama (jangan dihapus)
-  @Get('/api/info')
-  appInfo() {
-    return this.service.appInfo();
-  }
-
-  // ✅ Endpoint baru untuk tampilan HTML (EJS)
   @Get('/')
-  getHome(@Res() res: Response) {
+  async getHome(@Res() res: Response) {
     const message = this.service.getWelcomeMessage();
-    return res.render('home', {
+    const sidebarContent = await AreaManager.renderArea('sidebar');
+    res.render('home', {
       title: 'Halaman Utama NestJS Boilerplate',
       message,
+      sidebarContent,
+      layout: 'layout',
     });
   }
 }

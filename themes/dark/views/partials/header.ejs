@@ -9,8 +9,8 @@
   body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #FFD5D5;
-    color: #333;
+    background: #393E46;
+    color: #f1f1f1;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -18,17 +18,17 @@
 
   /* Navbar */
   .navbar {
-    background-color: #FDAAAA;
-    color: white;
+    background-color: #222831;
+    color: #fff;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
   
   .navbar a {
-    color: white;
+    color: #fff;
     text-decoration: none;
     margin-left: 1rem;
     font-weight: 500;
@@ -40,17 +40,18 @@
   }
 
   .theme-toggle {
-    background-color: #ff8e8e;
-    color: white;
+    background-color: #4ECCA3;
+    color: #222831;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     margin-left: 1rem;
     transition: 0.2s;
     cursor: pointer;
+    font-weight: 600;
   }
   
   .theme-toggle:hover {
-    background-color: #ff6d6d;
+    background-color: #45b88f;
   }
 
   /* Container Layout: Main + Sidebar */
@@ -66,22 +67,22 @@
   /* Main Content */
   .content {
     flex: 1;
-    background: white;
+    background: #2a2f38;
     padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    min-width: 0; /* Prevent flex overflow */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    min-width: 0;
   }
 
   .content h1 {
     margin-top: 0;
-    color: #333;
+    color: #4ECCA3;
     font-size: 2rem;
   }
 
   .content p {
     line-height: 1.6;
-    color: #555;
+    color: #ccc;
   }
 
   /* Sidebar */
@@ -92,18 +93,18 @@
 
   /* Plugin Styles */
   .sidebar > div {
-    background: white;
+    background: #2a2f38;
     padding: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     margin-bottom: 1.5rem;
   }
 
   .sidebar h3 {
     margin-top: 0;
-    color: #FDAAAA;
+    color: #4ECCA3;
     font-size: 1.2rem;
-    border-bottom: 2px solid #FFD5D5;
+    border-bottom: 2px solid #393E46;
     padding-bottom: 0.5rem;
   }
 
@@ -116,7 +117,7 @@
 
   .recent-posts li {
     padding: 0.75rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #393E46;
   }
 
   .recent-posts li:last-child {
@@ -124,13 +125,13 @@
   }
 
   .recent-posts strong {
-    color: #333;
+    color: #f1f1f1;
     display: block;
     margin-bottom: 0.25rem;
   }
 
   .recent-posts small {
-    color: #888;
+    color: #999;
     font-size: 0.85rem;
   }
 
@@ -151,12 +152,12 @@
   }
 
   .slideshow-images::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #393E46;
     border-radius: 10px;
   }
 
   .slideshow-images::-webkit-scrollbar-thumb {
-    background: #FDAAAA;
+    background: #4ECCA3;
     border-radius: 10px;
   }
 
@@ -176,8 +177,8 @@
 
   /* Footer */
   footer {
-    background: #FDAAAA;
-    color: white;
+    background: #222831;
+    color: #bbb;
     text-align: center;
     padding: 1.5rem;
     margin-top: auto;

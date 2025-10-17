@@ -27,6 +27,7 @@ import { MailerModule } from './mailer/mailer.module';
 // import { MongooseModule } from '@nestjs/mongoose';
 // import { MongooseConfigService } from './database/mongoose-config.service';
 // import { DatabaseConfig } from './database/config/database-config.type';
+import { AppController } from './app.controller'; // ✅ Tambahan untuk switch theme controller
 
 // // <database-block>
 // const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
@@ -93,5 +94,6 @@ import { MailerModule } from './mailer/mailer.module';
     MailerModule,
     HomeModule,
   ],
+  controllers: [AppController], // ✅ Tambahan agar route /switch-theme aktif
 })
 export class AppModule {}

@@ -1,70 +1,32 @@
-import 'dotenv/config';
-import {
-  ClassSerializerInterceptor,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { NestFactory, Reflector } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express'; // ✅ Tambahan
-// import { join } from 'path'; // ✅ Tambahan
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { useContainer } from 'class-validator';
+import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import { AppController } from './app.controller'; // ✅ tambahkan import ini
 import { AppModule } from './app.module';
-import validationOptions from './utils/validation-options';
-import { AllConfigType } from './config/config.type';
-import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
-// import themeConfig from './config/theme.json'; // ✅ Tambahan
+import { AreaManager } from './common/areaManager';
 import { setupViewEngine } from './common/viewEngine';
+import './plugins'; // register all plugins via side-effect
 
 async function bootstrap() {
-  // Ubah menjadi NestExpressApplication agar bisa pakai view engine
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  const configService = app.get(ConfigService<AllConfigType>);
+  // ✅ Folder public untuk file statis (CSS, JS, gambar)
+  app.useStaticAssets(join(__dirname, '..', 'public'));
 
-  app.enableShutdownHooks();
-  app.setGlobalPrefix(
-    configService.getOrThrow('app.apiPrefix', { infer: true }),
-    {
-      exclude: ['/'],
-    },
-  );
-  app.enableVersioning({
-    type: VersioningType.URI,
-  });
-  app.useGlobalPipes(new ValidationPipe(validationOptions));
-  app.useGlobalInterceptors(
-    new ResolvePromisesInterceptor(),
-    new ClassSerializerInterceptor(app.get(Reflector)),
-  );
-
-  // ✅ Panggil fungsi abstraksi
+  // ✅ Inisialisasi view engine sesuai tema aktif di config/theme.json
   setupViewEngine(app);
 
-  // Swagger bawaan tetap dipertahankan
-  const options = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('API docs')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addGlobalParameters({
-      in: 'header',
-      required: false,
-      name: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
-      schema: {
-        example: 'en',
-      },
-    })
-    .build();
+  // ✅ Inject instance app ke AppController agar bisa reload view engine setelah switch theme
+  const appController = app.get(AppController) as any;
+  if (appController) {
+    appController.app = app;
+  }
 
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs', app, document);
+  // ✅ Register plugins to areas once at bootstrap (order matters)
+  AreaManager.registerToArea('sidebar', 'recentPosts');
+  AreaManager.registerToArea('sidebar', 'slideshow');
 
-  // Jalankan server
-  await app.listen(configService.getOrThrow('app.port', { infer: true }));
+  await app.listen(3000);
+  console.log('🚀 Aplikasi berjalan di http://localhost:3000');
 }
 void bootstrap();
