@@ -42,7 +42,7 @@ import PluginManager from '../common/pluginManager';
 // Register plugin
 PluginManager.register({
   name: 'namaPlugin', // Nama unik
-  
+
   // Fungsi render - return HTML string
   render: async (): Promise<string> => {
     return `
@@ -72,15 +72,15 @@ Di `src/main.ts`, tambahkan registrasi area:
 ```typescript
 async function bootstrap() {
   // ... kode lain
-  
+
   // Import plugins
   await import('./plugins');
-  
+
   // Register plugins to areas
   AreaManager.registerToArea('sidebar', 'recentPosts');
   AreaManager.registerToArea('sidebar', 'slideshow');
   AreaManager.registerToArea('sidebar', 'namaPlugin'); // ← Tambahkan ini
-  
+
   // ... kode lain
 }
 ```
@@ -95,7 +95,7 @@ Tambahkan styling di `themes/default/views/partials/header.ejs`:
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .your-plugin h3 {
@@ -130,7 +130,7 @@ async getHome(): Promise<void> {
   const sidebarContent = await AreaManager.renderArea('sidebar');
   const headerContent = await AreaManager.renderArea('header');
   const footerContent = await AreaManager.renderArea('footer');
-  
+
   this.render('home', {
     sidebarContent,
     headerContent,
@@ -144,23 +144,15 @@ async getHome(): Promise<void> {
 Di file EJS Anda (contoh: `themes/default/views/layout.ejs`):
 
 ```html
-<header>
-  <%- headerContent %>
-</header>
+<header><%- headerContent %></header>
 
 <div class="container">
-  <main class="content">
-    <%- body %>
-  </main>
-  
-  <aside class="sidebar">
-    <%- sidebarContent %>
-  </aside>
+  <main class="content"><%- body %></main>
+
+  <aside class="sidebar"><%- sidebarContent %></aside>
 </div>
 
-<footer>
-  <%- footerContent %>
-</footer>
+<footer><%- footerContent %></footer>
 ```
 
 ## 💡 Contoh Plugin Lengkap
@@ -178,7 +170,7 @@ interface NewsItem {
 
 PluginManager.register({
   name: 'latestNews',
-  
+
   render: async (): Promise<string> => {
     // Bisa fetch dari database atau API
     const news: NewsItem[] = [
@@ -193,7 +185,7 @@ PluginManager.register({
         date: '2025-10-17',
       },
     ];
-    
+
     const items = news
       .map(
         (item) => `
@@ -206,7 +198,7 @@ PluginManager.register({
       `,
       )
       .join('');
-    
+
     return `
       <div class="latest-news">
         <h3>Latest News</h3>
@@ -224,13 +216,13 @@ import PluginManager from '../common/pluginManager';
 
 PluginManager.register({
   name: 'weatherWidget',
-  
+
   render: async (): Promise<string> => {
     try {
       // Contoh fetch data dari API
       const response = await fetch('https://api.weather.com/...');
       const data = await response.json();
-      
+
       return `
         <div class="weather-widget">
           <h3>Weather Today</h3>
@@ -297,26 +289,26 @@ PluginManager.register({
 
 ### PluginManager
 
-| Method | Parameter | Return | Deskripsi |
-|--------|-----------|--------|-----------|
-| `register()` | `Plugin` | `void` | Mendaftarkan plugin baru |
-| `getPlugin()` | `name: string` | `Plugin \| undefined` | Mengambil plugin berdasarkan nama |
-| `has()` | `name: string` | `boolean` | Cek apakah plugin sudah terdaftar |
-| `reset()` | - | `void` | Reset semua plugin (untuk testing) |
+| Method        | Parameter      | Return                | Deskripsi                          |
+| ------------- | -------------- | --------------------- | ---------------------------------- |
+| `register()`  | `Plugin`       | `void`                | Mendaftarkan plugin baru           |
+| `getPlugin()` | `name: string` | `Plugin \| undefined` | Mengambil plugin berdasarkan nama  |
+| `has()`       | `name: string` | `boolean`             | Cek apakah plugin sudah terdaftar  |
+| `reset()`     | -              | `void`                | Reset semua plugin (untuk testing) |
 
 ### AreaManager
 
-| Method | Parameter | Return | Deskripsi |
-|--------|-----------|--------|-----------|
-| `registerToArea()` | `areaName: string, pluginName: string` | `void` | Daftarkan plugin ke area tertentu |
-| `renderArea()` | `areaName: string` | `Promise<string>` | Render semua plugin di area |
-| `reset()` | - | `void` | Reset semua area (untuk testing) |
+| Method             | Parameter                              | Return            | Deskripsi                         |
+| ------------------ | -------------------------------------- | ----------------- | --------------------------------- |
+| `registerToArea()` | `areaName: string, pluginName: string` | `void`            | Daftarkan plugin ke area tertentu |
+| `renderArea()`     | `areaName: string`                     | `Promise<string>` | Render semua plugin di area       |
+| `reset()`          | -                                      | `void`            | Reset semua area (untuk testing)  |
 
 ### Plugin Interface
 
 ```typescript
 interface Plugin {
-  name: string;                          // Nama unik plugin
+  name: string; // Nama unik plugin
   render: () => Promise<string> | string; // Fungsi render HTML
 }
 ```
