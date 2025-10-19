@@ -6,7 +6,7 @@ Sistem ini memungkinkan Anda menambahkan konten dinamis ke berbagai area di apli
 
 ## 🏗️ Arsitektur
 
-```
+```plaintext
 ┌─────────────────────────────────────────┐
 │           main.ts (Bootstrap)           │
 │  ┌──────────────┐  ┌────────────────┐  │
@@ -37,12 +37,11 @@ Sistem ini memungkinkan Anda menambahkan konten dinamis ke berbagai area di apli
 Buat file baru di `src/plugins/namaPlugin.plugin.ts`:
 
 ```typescript
-import PluginManager from '../common/pluginManager';
+import { PluginManager } from '../common/pluginManager';
 
 // Register plugin
 PluginManager.register({
-  name: 'namaPlugin', // Nama unik
-
+  name: 'namaPlugin',
   // Fungsi render - return HTML string
   render: async (): Promise<string> => {
     return `
@@ -245,7 +244,7 @@ PluginManager.register({
 
 ### Layout 2-Kolom (Desktop)
 
-```
+```plaintext
 ┌────────────────────────────────────────────────────┐
 │                   Header/Nav                       │
 ├─────────────────────────────┬──────────────────────┤
@@ -259,13 +258,13 @@ PluginManager.register({
 │                             │  │ [Image Gallery]│  │
 │                             │  └────────────────┘  │
 │                             │                      │
-│                             │  Sidebar (300px)     │
+│                             │  Sidebar             │
 └─────────────────────────────┴──────────────────────┘
 ```
 
-### Layout Mobile (< 768px)
+### Layout Mobile (Stack Vertikal)
 
-```
+```plaintext
 ┌────────────────────────────┐
 │      Header/Nav            │
 ├────────────────────────────┤
@@ -285,7 +284,7 @@ PluginManager.register({
 └────────────────────────────┘
 ```
 
-## 🔍 API Reference
+## 📋 API Reference
 
 ### PluginManager
 
@@ -308,7 +307,7 @@ PluginManager.register({
 
 ```typescript
 interface Plugin {
-  name: string; // Nama unik plugin
+  name: string;                          // Nama unik plugin
   render: () => Promise<string> | string; // Fungsi render HTML
 }
 ```
@@ -351,4 +350,4 @@ interface Plugin {
 
 ---
 
-**Happy Plugin Development! 🚀**
+Happy Plugin Development! 🚀
