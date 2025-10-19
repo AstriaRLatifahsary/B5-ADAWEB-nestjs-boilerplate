@@ -1,0 +1,46 @@
+# Default: semua file teks disimpan sebagai LF saat di-commit
+* text=auto eol=lf
+
+# File teks umum di proyek ini
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.js     text eol=lf
+*.jsx    text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.json   text eol=lf
+*.json5  text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text eol=lf
+*.ejs    text eol=lf
+*.css    text eol=lf
+*.scss   text eol=lf
+*.env    text eol=lf
+Dockerfile             text eol=lf
+*.Dockerfile           text eol=lf
+docker-compose.*       text eol=lf
+
+# Skrip shell harus LF agar jalan di Linux/containers
+*.sh     text eol=lf
+
+# Opsi: jika punya skrip Windows, tetap CRLF
+# (tambahkan hanya jika ada .bat/.cmd)
+# *.bat   text eol=crlf
+# *.cmd   text eol=crlf
+
+# Binary (jangan diubah line endings)
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.svg    binary
+*.pdf    binary
+*.zip    binary
+*.gz     binary
+*.tgz    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.eot    binary
