@@ -27,7 +27,7 @@ export class AreaManager {
     return htmlParts.join('\n');
   }
 
-  // For tests/debugging
+  // Untuk keperluan pengujian/debugging
   static reset() {
     this.areas.clear();
   }

@@ -1,28 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { AppController } from './app.controller'; // ✅ tambahkan import ini
+import { AppController } from './app.controller'; // menambahkan import appcontroller
 import { AppModule } from './app.module';
 import { AreaManager } from './common/areaManager';
 import { setupViewEngine } from './common/viewEngine';
-import './plugins'; // register all plugins via side-effect
+import './plugins'; // mendaftarkan semua plugin melalui side-effect
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // ✅ Folder public untuk file statis (CSS, JS, gambar)
+  // Folder public untuk file statis (CSS, JS, gambar)
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
-  // ✅ Inisialisasi view engine sesuai tema aktif di config/theme.json
+  // Inisialisasi view engine sesuai tema aktif di config/theme.json
   setupViewEngine(app);
 
-  // ✅ Inject instance app ke AppController agar bisa reload view engine setelah switch theme
+  // Inject instance app ke AppController agar bisa reload view engine setelah switch theme
   const appController = app.get(AppController) as any;
   if (appController) {
     appController.app = app;
   }
 
-  // ✅ Register plugins to areas once at bootstrap (order matters)
+  // Daftarkan plugin ke area “sidebar”
   AreaManager.registerToArea('sidebar', 'recentPosts');
   AreaManager.registerToArea('sidebar', 'slideshow');
 
