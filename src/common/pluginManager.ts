@@ -8,7 +8,7 @@ export class PluginManager {
 
   static register(plugin: Plugin) {
     if (this.plugins.has(plugin.name)) {
-      // prevent duplicate registration during dev HMR/reloads
+      // mencegah pendaftaran ganda saat pengembangan (HMR/reload)
       return;
     }
     this.plugins.set(plugin.name, plugin);
@@ -22,7 +22,7 @@ export class PluginManager {
     return this.plugins.has(name);
   }
 
-  // For tests/debugging
+  // Untuk keperluan pengujian/debugging
   static reset() {
     this.plugins.clear();
   }
