@@ -307,7 +307,7 @@ PluginManager.register({
 
 ```typescript
 interface Plugin {
-  name: string;                          // Nama unik plugin
+  name: string; // Nama unik plugin
   render: () => Promise<string> | string; // Fungsi render HTML
 }
 ```

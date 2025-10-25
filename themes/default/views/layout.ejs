@@ -6,6 +6,20 @@
   <body>
     <%- include('partials/navbar') %>
 
+    <!-- Drawer overlay and sidebar -->
+    <div id="drawerOverlay" class="drawer-overlay" hidden></div>
+    <aside id="appDrawer" class="drawer" aria-hidden="true">
+      <nav class="drawer-nav" aria-label="Menu Utama">
+        <div class="drawer-logo" style="display: flex; flex-direction: column; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; margin-top: 0.2rem;">
+          <img src="/icons/adaweb_icon.png" alt="ADAWEB Logo" style="width: 120px; height: 120px; object-fit: contain;" />
+          <div style="color: #222; font-weight: 700; font-size: 1.22rem; letter-spacing: 0.04em; text-align: center;">B5 - ADAWEB</div>
+        </div>
+        <div class="drawer-plugins">
+          <%- typeof navSidebarContent !== 'undefined' ? navSidebarContent : '' %>
+        </div>
+      </nav>
+    </aside>
+
     <div class="container">
       <main class="content">
         <%- body %>
@@ -17,5 +31,32 @@
     </div>
 
     <%- include('partials/footer') %>
+    <script>
+      (function () {
+        const btn = document.getElementById('sidebarToggle');
+        const drawer = document.getElementById('appDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        if (!btn || !drawer || !overlay) return;
+        function openDrawer() {
+          drawer.classList.add('open');
+          drawer.setAttribute('aria-hidden', 'false');
+          overlay.hidden = false;
+          btn.setAttribute('aria-expanded', 'true');
+          document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+          drawer.classList.remove('open');
+          drawer.setAttribute('aria-hidden', 'true');
+          overlay.hidden = true;
+          btn.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        }
+        btn.addEventListener('click', () => {
+          if (drawer.classList.contains('open')) closeDrawer(); else openDrawer();
+        });
+        overlay.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+      })();
+    </script>
   </body>
 </html>

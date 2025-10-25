@@ -13,10 +13,12 @@ export class HomeController {
   async getHome(@Res() res: Response) {
     const message = this.service.getWelcomeMessage();
     const sidebarContent = await AreaManager.renderArea('sidebar');
+    const navSidebarContent = await AreaManager.renderArea('nav-sidebar');
     res.render('home', {
       title: 'Halaman Utama NestJS Boilerplate',
       message,
       sidebarContent,
+      navSidebarContent,
       layout: 'layout',
     });
   }

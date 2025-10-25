@@ -25,6 +25,8 @@ async function bootstrap() {
   // Daftarkan plugin ke area “sidebar”
   AreaManager.registerToArea('sidebar', 'recentPosts');
   AreaManager.registerToArea('sidebar', 'slideshow');
+  // Daftarkan plugin ke area navigasi sidebar (drawer)
+  AreaManager.registerToArea('nav-sidebar', 'navLinks');
 
   await app.listen(3000);
   console.log('🚀 Aplikasi berjalan di http://localhost:3000');
