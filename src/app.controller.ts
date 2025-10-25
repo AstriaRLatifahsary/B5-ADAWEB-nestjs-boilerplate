@@ -1,8 +1,8 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { setupViewEngine } from './common/viewEngine';
-import { join } from 'path';
 import * as fs from 'fs';
+import { join } from 'path';
+import { setupViewEngine } from './common/viewEngine';
 
 @Controller()
 export class AppController {
@@ -23,5 +23,26 @@ export class AppController {
 
     // Kembali ke halaman utama
     return res.redirect('/');
+  }
+
+  private setTheme(res: Response, theme: 'default' | 'dark') {
+    const configPath = join(__dirname, '..', 'config', 'theme.json');
+    const themeConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    themeConfig.theme = theme;
+    fs.writeFileSync(configPath, JSON.stringify(themeConfig, null, 2));
+    console.log(`🎨 Tema diubah ke: ${theme}`);
+    if (this.app) setupViewEngine(this.app);
+    const referer = res.req.headers.referer as string | undefined;
+    return res.redirect(referer || '/');
+  }
+
+  @Get('/theme/light')
+  themeLight(@Res() res: Response) {
+    return this.setTheme(res, 'default');
+  }
+
+  @Get('/theme/dark')
+  themeDark(@Res() res: Response) {
+    return this.setTheme(res, 'dark');
   }
 }

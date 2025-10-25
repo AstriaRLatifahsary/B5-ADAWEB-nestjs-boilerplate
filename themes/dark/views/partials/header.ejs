@@ -27,6 +27,10 @@
     align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
+  .nav-left { display: inline-flex; align-items: center; gap: 1.1rem; }
+  .brand { font-size: 1.45rem; letter-spacing: 0.04em; font-weight: 700; }
+  .hamburger { width: 26px; height: 18px; display: inline-flex; flex-direction: column; justify-content: space-between; background: transparent; border: 0; padding: 2px; cursor: pointer; color: #fff; }
+  .hamburger span { display: block; height: 2px; background: currentColor; border-radius: 2px; }
   
   .navbar a {
     color: #fff;
@@ -91,6 +95,27 @@
     width: 300px;
     flex-shrink: 0;
   }
+
+  /* Drawer overlay & sidebar (mobile/global) */
+  .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 998; }
+  .drawer { position: fixed; inset: 0 auto 0 0; width: 280px; max-width: 85vw; background: #2a2f38; transform: translateX(-100%); transition: transform .25s ease; z-index: 999; box-shadow: 2px 0 12px rgba(0,0,0,.4); overflow-y: auto; }
+  .drawer.open { transform: translateX(0); }
+  .drawer-nav { display: flex; flex-direction: column; gap: .25rem; padding: 1rem; }
+  .drawer-nav a { padding: .75rem 1rem; border-radius: 8px; color: #f1f1f1; text-decoration: none; }
+  .drawer-nav a:hover { background: #5A3B4E; }
+
+  /* Drawer content components */
+  .drawer-section { font-size: 0.75rem; letter-spacing: .08em; color: #fff; margin: 1rem 0 .5rem; text-transform: uppercase; }
+  .drawer-menu { list-style: none; padding: 0; margin: 0; }
+  .drawer-item { display: block; color: inherit; text-decoration: none; padding: .6rem .75rem; border-radius: 8px; margin: .15rem 0; }
+  .drawer-item:hover { background: #5A3B4E; }
+  .drawer-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .drawer-sub { padding-left: 1rem; margin: .25rem 0 .35rem; border-left: 2px solid #fff; }
+  .drawer-sub .drawer-item { padding: .5rem .75rem; }
+  .drawer-bottom { position: sticky; bottom: 0; background: #dce3f0; padding: .75rem; border-top: 1px solid #fff; margin-top: 1rem; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+  .theme-switch { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .theme-btn { display: flex; align-items: center; gap: .5rem; justify-content: center; padding: .6rem .9rem; border-radius: 10px; border: 1px solid #fff; text-decoration: none; color: #ffffff; background: #3a4048; box-shadow: 0 1px 2px rgba(0,0,0,.35); font-weight: 600; }
+  .theme-btn:hover { background: #5A3B4E; color: #ffffff; }
 
   /* Gaya umum untuk kotak plugin */
   .sidebar > div {
