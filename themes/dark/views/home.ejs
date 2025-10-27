@@ -1,2 +1,15 @@
 <h1>🚀 Selamat Datang di <%= title %></h1>
 <p><%= message %></p>
+
+<hr>
+
+<div class="thread-list">
+  <% if (threads && threads.length > 0) { %>
+    <% threads.forEach(thread => { %>
+      <%- include('partials/thread-card', { thread: thread }) %>
+    <% }) %>
+  <% } else { %>
+    <p>Tidak ada thread untuk ditampilkan.</p>
+  <% } %>
+</div>
+
