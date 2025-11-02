@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title || 'Auth' %> — ADAWEB</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/auth.css">
+  </head>
+  <body class="auth-page">
+    <main class="auth-container">
+      <% if (typeof page !== 'undefined') { %>
+  <%- include('../auth/' + page) %>
+      <% } else { %>
+        <div style="padding:2rem">No page specified</div>
+      <% } %>
+    </main>
+  </body>
+</html>

@@ -26,21 +26,22 @@
 
 <style>
   /* Horizontal nav menu */
-  .nav-menu { display: flex; align-items: center; gap: 1rem; }
-  .nav-menu a { padding: .4rem .6rem; border-radius: 6px; transition: color .1s; }
-  .nav-menu a:hover { background: none; color: #4ECCA3; }
+  /* increase specificity so these styles win over more-generic rules */
+  .navbar .nav-menu { display: flex; align-items: center; gap: 1rem; }
+  .navbar .nav-menu a { padding: .4rem .6rem; border-radius: 6px; transition: color .1s; }
+  .navbar .nav-menu a:hover { background: none; color: #4ECCA3; }
 
   /* Dropdown (no-JS using details/summary) */
   .nav-dropdown { position: relative; }
-  .nav-dropdown summary { list-style: none; cursor: pointer; padding: .4rem .6rem; border-radius: 6px; display: flex; align-items: center; gap: 0.18em; transition: color .1s; }
+  .navbar .nav-dropdown summary { list-style: none; cursor: pointer; padding: .4rem .6rem; border-radius: 6px; display: flex; align-items: center; gap: 0.18em; transition: color .1s; }
   .nav-dropdown summary::-webkit-details-marker { display: none; }
-  .nav-dropdown[open] > summary,
-  .nav-dropdown summary:hover {
+  .navbar .nav-dropdown[open] > summary,
+  .navbar .nav-dropdown summary:hover {
     background: none;
     color: #4ECCA3;
   }
-  .nav-dropdown summary:hover .dropdown-icon,
-  .nav-dropdown[open] > summary .dropdown-icon {
+  .navbar .nav-dropdown summary:hover .dropdown-icon,
+  .navbar .nav-dropdown[open] > summary .dropdown-icon {
     color: #4ECCA3;
   }
   .dropdown-icon { color: #fff; font-size: 1em; margin-left: 0.18em; user-select: none; transition: color .1s; }

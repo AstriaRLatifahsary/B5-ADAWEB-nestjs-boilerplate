@@ -1,16 +1,16 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
-import * as fs from 'fs';
-import expressLayouts from 'express-ejs-layouts';
-import helpers from './helpers';
 import { Application as ExpressApplication } from 'express';
+import expressLayouts from 'express-ejs-layouts';
+import * as fs from 'fs';
+import { join } from 'path';
+import helpers from './helpers';
 
 export function setupViewEngine(app: NestExpressApplication) {
   const configPath = join(__dirname, '..', '..', 'config', 'theme.json');
   const themeConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
   const activeTheme = themeConfig.theme || 'default';
 
-  console.log(`✅ Tema aktif: ${activeTheme}`);
+  console.log(`Tema aktif: ${activeTheme}`);
 
   app.setBaseViewsDir(
     join(__dirname, '..', '..', 'themes', activeTheme, 'views'),

@@ -4,9 +4,10 @@
 <hr>
 
 <div class="thread-list">
+  <p style="color:#888;font-size:0.9rem;">Debug: threads = <%= Array.isArray(threads) ? threads.length : 0 %></p>
   <% if (threads && threads.length > 0) { %>
     <% threads.forEach(thread => { %>
-      <%- include('partials/thread-card', { thread: thread }) %>
+      <%- include('./partials/thread-card', { thread: thread }) %>
     <% }) %>
   <% } else { %>
     <p>Tidak ada thread untuk ditampilkan.</p>

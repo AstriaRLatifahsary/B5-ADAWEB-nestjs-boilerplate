@@ -9,19 +9,20 @@ import { HomeService } from './home.service';
 export class HomeController {
   constructor(private service: HomeService) {}
 
-  @Get('/')
+  @Get(['/', '/home'])
   async getHome(@Res() res: Response) {
     const message = this.service.getWelcomeMessage();
     const sidebarContent = await AreaManager.renderArea('sidebar');
     const navSidebarContent = await AreaManager.renderArea('nav-sidebar');
-    
+
     // 🧩 Tambahkan data thread dummy dulu
     const threads = [
       {
         userAvatar: 'https://i.pravatar.cc/45?img=1',
         username: 'Astria R. Latifahsary',
         date: '27 Oktober 2025',
-        content: 'Selamat datang di forum Sidanus! Ini adalah postingan pertama 🎉',
+        content:
+          'Selamat datang di forum Sidanus! Ini adalah postingan pertama 🎉',
         likes: 23,
         replies: 5,
         reposts: 2,
@@ -36,8 +37,12 @@ export class HomeController {
         reposts: 1,
       },
     ];
-    
+
     // ⬇️ threads perlu dikirim ke view agar bisa dirender di home.ejs
+    console.log(
+      'DEBUG: rendering home with threads.length =',
+      Array.isArray(threads) ? threads.length : 0,
+    );
     res.render('home', {
       title: 'Halaman Utama NestJS Boilerplate',
       message,

@@ -1,0 +1,60 @@
+<% layout = typeof layout !== 'undefined' ? layout : 'layout' %>
+<div class="profile-page">
+  <div class="profile-hero" style="background:#f59d9d; height:180px; display:block;"></div>
+  <div class="profile-inner" style="max-width:900px; margin: -60px auto 2rem; padding: 1rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <div class="avatar" style="width:120px; height:120px; border-radius:999px; overflow:hidden; border:4px solid #000; background:#eee;">
+          <% if (user && user.profilePhoto) { %>
+            <img src="<%= user.profilePhoto %>" alt="avatar" style="width:100%; height:100%; object-fit:cover; display:block;" />
+          <% } else { %>
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#777; font-size:2rem;">∘</div>
+          <% } %>
+        </div>
+        <div>
+          <h2 style="margin:0; font-size:1.5rem;"><%= user.displayName || user.username %> <% if (false) { %><span style="font-size:0.8rem; color:#999;">🔒</span><% } %></h2>
+          <div style="color:#777; margin-top:.25rem;">@<%= user.username %></div>
+          <div style="margin-top:.5rem; color:#666;">
+            <strong><%= (user.following && user.following.length) || 0 %></strong> Mengikuti &nbsp;&nbsp;
+            <strong><%= (user.followers && user.followers.length) || 0 %></strong> Pengikut
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button id="editBtn" class="btn" style="padding:.5rem 1rem; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:transparent; color:inherit;">Edit profil</button>
+        <form id="logoutForm" method="post" action="/logout" style="display:inline-block; margin-left:.5rem;">
+          <button class="btn" type="submit" style="padding:.5rem 1rem; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:transparent; color:inherit;">Keluar akun</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="editArea" style="margin-top:1rem; display:none; border-radius:8px; padding:1rem; background:rgba(0,0,0,.03);">
+      <form action="/profile" method="post" enctype="multipart/form-data">
+        <div style="display:flex; gap:1rem; align-items:center;">
+          <div>
+            <label style="display:block; font-size:.9rem; color:#555;">Foto Profil</label>
+            <input type="file" name="avatar" accept="image/*" />
+          </div>
+          <div style="flex:1;">
+            <label style="display:block; font-size:.9rem; color:#555;">Nama panggilan</label>
+            <input name="displayName" value="<%= user.displayName || '' %>" placeholder="Nama panggilan" style="width:100%; padding:.5rem; border-radius:6px; border:1px solid #ddd;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:.5rem; align-items:flex-end;">
+            <button type="submit" class="btn" style="padding:.5rem 1rem; border-radius:999px; background:#007bff; color:#fff; border:none;">Simpan</button>
+            <button id="cancelEdit" type="button" class="btn" style="padding:.4rem .8rem; border-radius:999px; background:transparent; border:1px solid #ddd;">Batal</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('editBtn').addEventListener('click', function(){
+    const area = document.getElementById('editArea');
+    area.style.display = area.style.display === 'none' ? 'block' : 'none';
+  });
+  const cancel = document.getElementById('cancelEdit');
+  if (cancel) cancel.addEventListener('click', function(){ document.getElementById('editArea').style.display = 'none'; });
+</script>
