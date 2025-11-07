@@ -56,9 +56,10 @@ async function bootstrap() {
 
   // Daftarkan plugin ke area “sidebar”
   AreaManager.registerToArea('sidebar', 'recentPosts');
-  AreaManager.registerToArea('sidebar', 'slideshow');
+  AreaManager.registerToArea('sidebar', 'recommendAccounts');
   // Daftarkan plugin ke area navigasi sidebar (drawer)
   AreaManager.registerToArea('nav-sidebar', 'navLinks');
+  AreaManager.registerToArea('main', 'socialFeed');
 
   // expose AreaManager to mounted express routers (auth router, etc.)
   // so they can render area HTML when needed (used by routes/auth.js controllers)

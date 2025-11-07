@@ -8,10 +8,6 @@ PluginManager.register({
         title: 'Breaking: AI Technology Reaches New Milestone',
         date: '2025-10-15',
       },
-      {
-        title: 'Tech Giant Announces Revolutionary Product Launch',
-        date: '2025-10-12',
-      },
       { title: 'Global Summit on Climate Change Begins', date: '2025-10-10' },
       {
         title: 'New Study Reveals Health Benefits of Mediterranean Diet',

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+  <link rel="stylesheet" href="/css/homeDark.css">
   <head>
     <%- include('partials/header') %>
   </head>
@@ -23,6 +24,7 @@
     <div class="container">
       <main class="content">
         <%- body %>
+        <%- mainContent %>
       </main>
 
       <aside class="sidebar">
@@ -30,7 +32,6 @@
       </aside>
     </div>
 
-    <%- include('partials/footer') %>
     <script>
       (function () {
         const btn = document.getElementById('sidebarToggle');
@@ -58,5 +59,7 @@
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
       })();
     </script>
+
+    <script src="/js/socialFeed.js"></script>
   </body>
 </html>

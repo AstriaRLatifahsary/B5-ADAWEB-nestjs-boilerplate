@@ -1,40 +1,34 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity({ name: 'auth_user' })
+@Entity({ name: 'users' })
 export class AuthUser {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: String, unique: true })
+  @Column({ unique: true })
   username: string;
 
-  @Column({ type: String, nullable: true })
-  email?: string | null;
+  @Column({ nullable: true })
+  email: string;
+
+  @Column()
+  passwordHash: string;
 
   @Column({ nullable: true })
-  passwordHash?: string;
+  displayName: string;
 
   @Column({ nullable: true })
-  displayName?: string | null;
+  profilePhoto: string;
 
-  @Column({ nullable: true })
-  profilePhoto?: string | null;
+  @Column({ type: 'text', nullable: true })
+  bio: string;
+
+  @Column({ length: 100, nullable: true })
+  location: string;
 
   @Column({ type: 'int', default: 0 })
   followersCount: number;
 
   @Column({ type: 'int', default: 0 })
   followingCount: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

@@ -1,3 +1,4 @@
 import './navLinks.plugin';
 import './recentPosts.plugin';
-import './slideshow.plugin';
+import './recommendAccounts.plugin';
+import './socialFeed.plugin';

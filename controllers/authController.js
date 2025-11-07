@@ -8,21 +8,29 @@ const users = new Map();
 let AppDataSource;
 let AuthUserEntity;
 try {
-  AppDataSource = require('../src/database/data-source').AppDataSource;
-  AuthUserEntity = require('../src/auth/auth-user.entity').AuthUser;
+  AppDataSource = require('../dist/database/data-source').AppDataSource;
+  AuthUserEntity = require('../dist/auth/auth-user.entity').AuthUser;
 } catch (err) {
   void err;
   AppDataSource = null;
   AuthUserEntity = null;
 }
 
+let isDataSourceInit = false;
 async function getAuthRepo() {
-  if (!AppDataSource || !AuthUserEntity) return null;
+  if (!AppDataSource || !AuthUserEntity) {
+    console.warn('⚠️ AppDataSource atau AuthUserEntity tidak ditemukan');
+    return null;
+  }
   try {
-    if (!AppDataSource.isInitialized) await AppDataSource.initialize();
+    if (!AppDataSource.isInitialized && !isDataSourceInit) {
+      await AppDataSource.initialize();
+      isDataSourceInit = true;
+      console.log('✅ AppDataSource initialized (from authController)');
+    }
     return AppDataSource.getRepository(AuthUserEntity);
   } catch (err) {
-    void err;
+    console.error('❌ Gagal initialize AppDataSource:', err.message);
     return null;
   }
 }

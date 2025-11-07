@@ -159,7 +159,7 @@ Bagian ini menjabarkan setiap sub-fitur utama: deskripsi, entitas DB, file/folde
 - Integrasi eksternal:
   - Redis + BullMQ untuk queue
   - Meilisearch/Elastic untuk trending/search
-  - Recommendation engine (simple heuristics first; ML later)
+  - recommendation engine (simple heuristics first; ML later)
 
 - Kontrak API:
   - Cursor-based pagination: `GET /feeds/following?cursor=<cursor>&limit=20`

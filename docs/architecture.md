@@ -7,7 +7,7 @@
 - [Hexagonal Architecture](#hexagonal-architecture)
 - [Motivation](#motivation)
 - [Description of the module structure](#description-of-the-module-structure)
-- [Recommendations](#recommendations)
+- [recommendations](#recommendations)
   - [Repository](#repository)
 - [FAQ](#faq)
   - [Is there a way to generate a new resource (controller, service, DTOs, etc) with Hexagonal Architecture?](#is-there-a-way-to-generate-a-new-resource-controller-service-dtos-etc-with-hexagonal-architecture)
@@ -75,7 +75,7 @@ The main reason for using Hexagonal Architecture is to separate the business log
 
 Each component has `port` and `adapters`. `Port` is interface that define the methods for interacting with the infrastructure. `Adapters` are implementations of the `port`.
 
-## Recommendations
+## recommendations
 
 ### Repository
 

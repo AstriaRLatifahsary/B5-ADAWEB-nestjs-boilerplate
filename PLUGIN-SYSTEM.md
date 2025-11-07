@@ -20,7 +20,7 @@ Sistem ini memungkinkan Anda menambahkan konten dinamis ke berbagai area di apli
         │   Plugins Directory   │
         ├───────────────────────┤
         │ recentPosts.plugin.ts │
-        │ slideshow.plugin.ts   │
+        │ .plugin.ts   │
         │ yourPlugin.plugin.ts  │
         └───────────────────────┘
                     ↓
@@ -60,7 +60,7 @@ Tambahkan import di `src/plugins/index.ts`:
 
 ```typescript
 import './recentPosts.plugin';
-import './slideshow.plugin';
+import './.plugin';
 import './namaPlugin.plugin'; // ← Tambahkan ini
 ```
 
@@ -77,7 +77,7 @@ async function bootstrap() {
 
   // Register plugins to areas
   AreaManager.registerToArea('sidebar', 'recentPosts');
-  AreaManager.registerToArea('sidebar', 'slideshow');
+  AreaManager.registerToArea('sidebar', '');
   AreaManager.registerToArea('sidebar', 'namaPlugin'); // ← Tambahkan ini
 
   // ... kode lain
@@ -254,7 +254,7 @@ PluginManager.register({
 │                             │  │ - News 2       │  │
 │    (flex: 1)                │  └────────────────┘  │
 │                             │  ┌────────────────┐  │
-│                             │  │ Slideshow      │  │
+│                             │  │       │  │
 │                             │  │ [Image Gallery]│  │
 │                             │  └────────────────┘  │
 │                             │                      │
@@ -277,7 +277,7 @@ PluginManager.register({
 │  │ Recent Posts         │  │
 │  └──────────────────────┘  │
 │  ┌──────────────────────┐  │
-│  │ Slideshow            │  │
+│  │             │  │
 │  └──────────────────────┘  │
 │                            │
 │  Sidebar (full width)      │
@@ -343,7 +343,7 @@ interface Plugin {
 ## 📚 Referensi
 
 - Main Implementation: `src/common/pluginManager.ts`, `src/common/areaManager.ts`
-- Example Plugins: `src/plugins/recentPosts.plugin.ts`, `src/plugins/slideshow.plugin.ts`
+- Example Plugins: `src/plugins/recentPosts.plugin.ts`, `src/plugins/.plugin.ts`
 - Bootstrap: `src/main.ts`
 - Controller Example: `src/home/home.controller.ts`
 - Layout: `themes/default/views/layout.ejs`
