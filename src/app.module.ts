@@ -27,7 +27,17 @@ import { MailerModule } from './mailer/mailer.module';
 // import { MongooseModule } from '@nestjs/mongoose';
 // import { MongooseConfigService } from './database/mongoose-config.service';
 // import { DatabaseConfig } from './database/config/database-config.type';
-import { AppController } from './app.controller'; // ✅ Tambahan untuk switch theme controller
+import { AppController } from './app.controller';
+import { PostsModule } from './posts/posts.module';
+import { AreaManager } from './common/areaManager';
+
+// Register plugins to main area
+AreaManager.registerToArea('main', 'newPost');
+AreaManager.registerToArea('main', 'socialFeed');
+
+// Import plugins
+import './plugins/newPost.plugin';
+import './plugins/socialFeed.plugin';
 
 // // <database-block>
 // const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
@@ -93,6 +103,7 @@ import { AppController } from './app.controller'; // ✅ Tambahan untuk switch t
     MailModule,
     MailerModule,
     HomeModule,
+    PostsModule,
   ],
   controllers: [AppController], // ✅ Tambahan agar route /switch-theme aktif
 })

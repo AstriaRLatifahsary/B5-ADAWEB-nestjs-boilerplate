@@ -1,6 +1,3 @@
 {
-  "ations": [
-    "yzhang.markdown-all-in-one",
-    "DavidAnson.vscode-markdownlint"
-  ]
+  "ations": ["yzhang.markdown-all-in-one", "DavidAnson.vscode-markdownlint"]
 }

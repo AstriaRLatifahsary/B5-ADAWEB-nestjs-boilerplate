@@ -1,0 +1,190 @@
+/* 🌈 Gen Z Social Post Style */
+
+.add-post {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-post::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(circle at 25% 25%, #8b5cf6, transparent 30%),
+    radial-gradient(circle at 75% 75%, #ec4899, transparent 30%);
+  opacity: 0.08;
+  z-index: 0;
+}
+
+.add-post:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  z-index: 1;
+  position: relative;
+}
+
+.user-avatar {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+}
+
+.add-post input,
+.add-post textarea {
+  width: 100%;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  color: #1f2937;
+  z-index: 1;
+  position: relative;
+}
+
+.add-post input::placeholder,
+.add-post textarea::placeholder {
+  color: #a1a1aa;
+}
+
+.add-post input:focus,
+.add-post textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2);
+}
+
+.add-post textarea {
+  resize: none;
+  min-height: 120px;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.post-tools {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.tool-button {
+  background: rgba(139, 92, 246, 0.08);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.tool-button:hover {
+  background: rgba(236, 72, 153, 0.15);
+  transform: scale(1.15);
+}
+
+#submit-post {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.4);
+}
+
+#submit-post:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.5);
+  background: linear-gradient(135deg, #d946ef, #7c3aed);
+}
+
+#submit-post:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+}
+
+.post-notification {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-weight: 500;
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.3);
+  animation: slideUpFade 0.4s ease-out;
+}
+
+@keyframes slideUpFade {
+  0% {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 🌙 Dark Mode Gen Z */
+@media (prefers-color-scheme: dark) {
+  .add-post {
+    background: rgba(24, 24, 27, 0.7);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .add-post input,
+  .add-post textarea {
+    background: rgba(39, 39, 42, 0.85);
+    color: #fafafa;
+  }
+
+  .add-post input::placeholder,
+  .add-post textarea::placeholder {
+    color: #71717a;
+  }
+
+  #submit-post {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+  }
+}

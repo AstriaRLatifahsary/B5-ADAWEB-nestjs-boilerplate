@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     const parent = btn.closest('.comment, .reply');
     const replyInput = parent.querySelector(':scope > .reply-input');
-    replyInput.style.display = replyInput.style.display === 'none' ? 'flex' : 'none';
+    replyInput.style.display =
+      replyInput.style.display === 'none' ? 'flex' : 'none';
   });
 
   // Kirim balasan (reply)
@@ -82,15 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const div = document.createElement('div');
     div.className = 'reply'; // Bisa dipakai juga untuk komentar utama (strukturnya sama)
     div.innerHTML = `
-      <strong>${username}</strong>: ${text}
-      <span class="comment-time">baru saja</span>
-      <button class="reply-toggle">Balas</button>
-      <div class="replies"></div>
-      <div class="reply-input" style="display:none;">
-        <input type="text" placeholder="Balas komentar..." />
-        <button class="send-reply">Kirim</button>
-      </div>
-    `;
+        <strong>${username}</strong>: ${text}
+        <span class="comment-time">baru saja</span>
+        <button class="reply-toggle">Balas</button>
+        <div class="replies"></div>
+        <div class="reply-input" style="display:none;">
+          <input type="text" placeholder="Balas komentar..." />
+          <button class="send-reply">Kirim</button>
+        </div>
+      `;
     return div;
   }
 
