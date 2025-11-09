@@ -34,7 +34,7 @@ PluginManager.register({
     const randomReposts = () => Math.floor(Math.random() * 200) + 5;
     const randomHours = () => `${Math.floor(Math.random() * 23) + 1} jam lalu`;
 
-    // 🔹 50 komentar dummy unik berbahasa Indonesia
+    // 🔹 Dummy komentar
     const allComments = [
       'Postingan ini sangat inspiratif!',
       'Wah, nggak nyangka bisa sebagus ini!',
@@ -88,17 +88,43 @@ PluginManager.register({
       'Suka banget sama insight-nya!',
     ];
 
-    const sampleUsers = [
-      'TechLover',
-      'IndieDev',
-      'SpaceNerd',
-      'CryptoKid',
-      'CodeMaster',
-      'AI_Junkie',
-      'TravelerX',
-      'MusicSoul',
-      'Dreamer123',
-      'ArtGeek',
+    const sampleUsersReal = [
+      'Rara_tech',
+      'BudiTravels',
+      'SitiMusic',
+      'AldiDev',
+      'NinaAI',
+      'YogaFilm',
+      'DewiArt',
+      'RicoSpace',
+      'FaniCrypto',
+      'LukasGamer',
+      'TariLifestyle',
+      'RanggaStartup',
+      'MayaDesign',
+      'VinoPhoto',
+      'LiaEdu',
+    ];
+
+    const sampleTopics = [
+      'kecerdasan buatan',
+      'teknologi',
+      'startup',
+      'game',
+      'pemrograman',
+      'musik',
+      'film',
+      'perjalanan',
+      'gaya hidup',
+      'produktifitas',
+      'pendidikan',
+      'keamanan siber',
+      'web3',
+      'blockchain',
+      'AR/VR',
+      'desain',
+      'antariksa',
+      'sains',
     ];
 
     const usedIndices = new Set<number>();
@@ -110,14 +136,15 @@ PluginManager.register({
       usedIndices.add(index);
 
       return {
-        username: sampleUsers[Math.floor(Math.random() * sampleUsers.length)],
+        username:
+          sampleUsersReal[Math.floor(Math.random() * sampleUsersReal.length)],
         content: allComments[index],
         time: `${Math.floor(Math.random() * 59) + 1} menit lalu`,
         replies: [],
       };
     };
 
-    // 🔹 Postingan utama — sudah diterjemahkan ke Bahasa Indonesia
+    // 🔹 Postingan utama (lebih realistis)
     const posts: Post[] = [
       {
         id: 1,
@@ -184,49 +211,36 @@ PluginManager.register({
       },
     ];
 
-    // 🔁 Tambahan postingan dummy (hingga 100)
-    const topics = [
-      'kecerdasan buatan',
-      'teknologi',
-      'startup',
-      'game',
-      'pemrograman',
-      'musik',
-      'film',
-      'perjalanan',
-      'gaya hidup',
-      'produktifitas',
-      'pendidikan',
-      'keamanan siber',
-      'web3',
-      'blockchain',
-      'AR/VR',
-      'desain',
-      'antariksa',
-      'sains',
-    ];
-
-    for (let i = 5; i <= 100; i++) {
-      const topic = topics[Math.floor(Math.random() * topics.length)];
-      const hasImage = Math.random() < 0.3;
-      const commentCount = Math.floor(Math.random() * 3) + 1;
-
+    // 🔁 Tambahan postingan dummy lebih realistis
+    for (let i = 0; i < 50; i++) {
+      const username =
+        sampleUsersReal[Math.floor(Math.random() * sampleUsersReal.length)];
+      const topic =
+        sampleTopics[Math.floor(Math.random() * sampleTopics.length)];
+      const hasImage = Math.random() < 0.4;
+      const commentCount = Math.floor(Math.random() * 5); // 0–4 komentar
       const generatedComments: Comment[] = [];
       for (let j = 0; j < commentCount; j++) {
         generatedComments.push(randomUniqueComment());
       }
 
       posts.push({
-        id: i,
-        username: `User${i}`,
-        handle: `@user${i}`,
-        content: `Pemikiran terkini tentang ${topic} — bagaimana pendapatmu soal inovasi terbaru di bidang ini? #${topic.replace(' ', '')}`,
+        id: posts.length + 1,
+        username: username,
+        handle: `@${username.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+        content: [
+          `Baru saja mencoba hal baru tentang ${topic}, ternyata sangat menarik!`,
+          `Apa pendapat kalian soal inovasi terbaru di bidang ${topic}?`,
+          `Hari ini belajar banyak tentang ${topic}, share pengalaman kalian dong.`,
+          `Update terbaru tentang ${topic}, ini insight menarik yang aku temukan!`,
+          `Bagi yang tertarik dengan ${topic}, ini tips praktisnya.`,
+        ][Math.floor(Math.random() * 5)],
         likes: randomLikes(),
         reposts: randomReposts(),
         comments: commentCount,
         time: randomHours(),
         image: hasImage
-          ? `https://picsum.photos/seed/${topic}-${i}/600/400`
+          ? `https://picsum.photos/seed/${username}-${i}/600/400`
           : undefined,
         commentList: generatedComments,
       });
@@ -298,14 +312,12 @@ PluginManager.register({
 
     const html = `
       <style>
-        /* Make social feed take more vertical space and be scrollable within viewport */
         .social-feed {
           max-width: 100%;
           box-sizing: border-box;
-          /* allow the feed to extend downward but stay within viewport */
           max-height: calc(100vh - 160px);
           overflow-y: auto;
-          padding-right: 8px; /* avoid layout shift when scrollbar appears */
+          padding-right: 8px;
         }
 
         .social-feed h3 { margin-top: 0; }

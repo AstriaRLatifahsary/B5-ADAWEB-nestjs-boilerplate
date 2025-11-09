@@ -23,7 +23,7 @@ export class PostsService {
    */
   async create(dto: CreatePostDto): Promise<Post> {
     const newPost = this.postRepository.create({
-      username: dto.username || 'Anonymous',
+      username: dto.username || 'Kamu',
       handle: dto.handle || '@' + (dto.username || 'anon').toLowerCase(),
       content: dto.content,
       image: dto.image,
