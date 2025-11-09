@@ -46,33 +46,26 @@ PluginManager.register({
         .recommend-section {
           width: 350px;
           padding: 10px;
-          background: #fff;
           border-radius: 12px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-          overflow-x: auto;         /* scroll horizontal */
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+          overflow-x: auto;
           overflow-y: hidden;
-        }
-
-        .recommend-section h3 {
-          font-size: 15px;
-          margin-bottom: 8px;
-          color: #d66b6b;
+          transition: background 0.3s, color 0.3s;
         }
 
         .recommend-carousel {
-          display: inline-flex;     /* inline-flex penting agar scroll muncul */
+          display: inline-flex;
           flex-direction: row;
           gap: 10px;
-          min-width: max-content;   /* memaksa total lebar > container */
+          min-width: max-content;
         }
 
         .recommend-card {
-          flex: 0 0 auto;           /* mencegah shrink */
+          flex: 0 0 auto;
           width: 120px;
-          background: #fdfdfd;
           border-radius: 8px;
           padding: 8px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
           text-align: center;
         }
 
@@ -85,25 +78,38 @@ PluginManager.register({
           margin-bottom: 5px;
         }
 
-        .recommend-info strong { font-size: 13px; }
-        .recommend-info small { display: block; font-size: 11px; color: #666; }
-        .followers-count { font-size: 11px; color: #888; margin-top: 2px; }
+        .recommend-info strong {
+          font-size: 13px;
+        }
+
+        .recommend-info small {
+          display: block;
+          font-size: 11px;
+          opacity: 0.8;
+        }
+
+        .followers-count {
+          font-size: 11px;
+          opacity: 0.7;
+          margin-top: 2px;
+        }
 
         .follow-btn {
-          background: #1d9bf0;
-          color: #fff;
           border: none;
           padding: 3px 8px;
           font-size: 11px;
           border-radius: 5px;
           cursor: pointer;
           margin-top: 4px;
+          transition: all 0.2s;
         }
 
-        /* scrollbar */
-        .recommend-section::-webkit-scrollbar { height: 6px; }
+        .recommend-section::-webkit-scrollbar {
+          height: 6px;
+        }
+
         .recommend-section::-webkit-scrollbar-thumb {
-          background: rgba(0,0,0,0.3);
+          background: rgba(0, 0, 0, 0.3);
           border-radius: 3px;
         }
       </style>
@@ -114,21 +120,46 @@ PluginManager.register({
           ${accounts
             .map(
               (acc) => `
-              <div class="recommend-card" data-id="${acc.id}">
-                <img src="${acc.photo}" alt="${acc.name}" class="profile-photo"/>
-                <div class="recommend-info">
-                  <strong>${acc.name}</strong>
-                  <small>${acc.username}</small>
-                  <div class="followers-count">${acc.followers} pengikut</div>
-                  <button class="follow-btn">Ikuti</button>
-                </div>
-              </div>`,
+            <div class="recommend-card" data-id="${acc.id}">
+              <img src="${acc.photo}" alt="${acc.name}" class="profile-photo" />
+              <div class="recommend-info">
+                <strong>${acc.name}</strong>
+                <small>${acc.username}</small>
+                <div class="followers-count">${acc.followers} pengikut</div>
+                <button class="follow-btn">Ikuti</button>
+              </div>
+            </div>
+          `,
             )
             .join('')}
         </div>
       </div>
 
-      <script src="/js/recommendAccounts.js"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('.recommend-card').forEach((card) => {
+            const btn = card.querySelector('.follow-btn');
+            const countEl = card.querySelector('.followers-count');
+            let followed = false;
+
+            btn.addEventListener('click', () => {
+              let count = parseInt(countEl.textContent);
+              if (!followed) {
+                count++;
+                btn.textContent = 'Mengikuti';
+                btn.style.opacity = '0.7';
+                followed = true;
+              } else {
+                count--;
+                btn.textContent = 'Ikuti';
+                btn.style.opacity = '1';
+                followed = false;
+              }
+              countEl.textContent = count + ' pengikut';
+            });
+          });
+        });
+      </script>
     `;
   },
 });
