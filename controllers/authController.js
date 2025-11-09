@@ -18,7 +18,7 @@ try {
 let isDataSourceInit = false;
 async function getAuthRepo() {
   if (!AppDataSource || !AuthUserEntity) {
-    console.warn('⚠️ AppDataSource atau AuthUserEntity tidak ditemukan');
+    console.warn('⚠ AppDataSource atau AuthUserEntity tidak ditemukan');
     return null;
   }
   try {

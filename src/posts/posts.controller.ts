@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './interfaces/post.interface';
+import { Post } from '../entities/post.entity'; // ✅ ubah ke entity, bukan interface
 
 @Controller('api/posts')
 export class PostsController {
@@ -26,14 +26,9 @@ export class PostsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<{ success: boolean }> {
-    const deleted = this.postsService.delete(Number(id));
-    // postsService.delete returns Promise<boolean> or boolean depending on implementation; normalize
-    return Promise.resolve(
-      deleted instanceof Promise
-        ? deleted.then((v) => ({ success: v }))
-        : { success: deleted },
-    );
+  async remove(@Param('id') id: string): Promise<{ success: boolean }> {
+    await this.postsService.delete(Number(id));
+    return { success: true }; // ✅ ubah, tidak perlu Promise.resolve
   }
 
   @Put(':id')
@@ -42,7 +37,6 @@ export class PostsController {
     @Body() body: Partial<CreatePostDto>,
   ): Promise<Post> {
     const updated = await this.postsService.update(Number(id), body);
-    // In this simple in-memory implementation, return the updated post or null
-    return updated as Post;
+    return updated;
   }
 }

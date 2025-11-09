@@ -1,7 +1,4 @@
 import { Module } from '@nestjs/common';
-// import { UsersModule } from './users/users.module';
-// import { FilesModule } from './files/files.module';
-// import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import path from 'path';
 import appleConfig from './auth-apple/config/apple.config';
@@ -12,24 +9,18 @@ import appConfig from './config/app.config';
 import databaseConfig from './database/config/database.config';
 import fileConfig from './files/config/file.config';
 import mailConfig from './mail/config/mail.config';
-// import { TypeOrmModule } from '@nestjs/typeorm';
-// import { AuthAppleModule } from './auth-apple/auth-apple.module';
-// import { AuthFacebookModule } from './auth-facebook/auth-facebook.module';
-// import { AuthGoogleModule } from './auth-google/auth-google.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
-// import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { HomeModule } from './home/home.module';
 import { MailModule } from './mail/mail.module';
-// import { DataSource, DataSourceOptions } from 'typeorm';
-import { AllConfigType } from './config/config.type';
-// import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
-// import { MongooseModule } from '@nestjs/mongoose';
-// import { MongooseConfigService } from './database/mongoose-config.service';
-// import { DatabaseConfig } from './database/config/database-config.type';
 import { AppController } from './app.controller';
 import { PostsModule } from './posts/posts.module';
 import { AreaManager } from './common/areaManager';
+
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { TypeOrmConfigService } from './database/typeorm-config.service';
+import { AllConfigType } from './config/config.type';
 
 // Register plugins to main area
 AreaManager.registerToArea('main', 'newPost');
@@ -39,19 +30,21 @@ AreaManager.registerToArea('main', 'socialFeed');
 import './plugins/newPost.plugin';
 import './plugins/socialFeed.plugin';
 
-// // <database-block>
-// const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
-//   .isDocumentDatabase
-//   ? MongooseModule.forRootAsync({
-//       useClass: MongooseConfigService,
-//     })
-//   : TypeOrmModule.forRootAsync({
-//       useClass: TypeOrmConfigService,
-//       dataSourceFactory: async (options: DataSourceOptions) => {
-//         return new DataSource(options).initialize();
-//       },
-//     });
-// // </database-block>
+// ✅ Aktifkan database connection & buat tabel otomatis (dev mode)
+const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
+  useClass: TypeOrmConfigService,
+  dataSourceFactory: async (options: DataSourceOptions) => {
+    const dataSource = new DataSource({
+      ...options,
+      // ⬇️ Pastikan entity otomatis terdeteksi
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      // ⬇️ Untuk development saja — otomatis create tabel
+      synchronize: true,
+      logging: true,
+    });
+    return dataSource.initialize();
+  },
+});
 
 @Module({
   imports: [
@@ -69,7 +62,10 @@ import './plugins/socialFeed.plugin';
       ],
       envFilePath: ['.env'],
     }),
-    // infrastructureDatabaseModule,
+
+    // ✅ Koneksi database
+    infrastructureDatabaseModule,
+
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService<AllConfigType>) => ({
         fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
@@ -93,18 +89,12 @@ import './plugins/socialFeed.plugin';
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
-    // UsersModule,
-    // FilesModule,
-    // AuthModule,
-    // AuthFacebookModule,
-    // AuthGoogleModule,
-    // AuthAppleModule,
-    // SessionModule,
+
     MailModule,
     MailerModule,
     HomeModule,
     PostsModule,
   ],
-  controllers: [AppController], // ✅ Tambahan agar route /switch-theme aktif
+  controllers: [AppController],
 })
 export class AppModule {}

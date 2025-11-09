@@ -1,52 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Post } from '../entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './interfaces/post.interface';
 
 @Injectable()
 export class PostsService {
-  private posts: Post[] = [];
-  private idCounter = 1000;
+  constructor(
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
+  ) {}
 
-  findAll(): Promise<Post[]> {
-    return Promise.resolve(this.posts);
+  /**
+   * Ambil semua post
+   */
+  async findAll(): Promise<Post[]> {
+    return await this.postRepository.find();
   }
 
-  create(dto: CreatePostDto): Promise<Post> {
-    const post: Post = {
-      id: ++this.idCounter,
+  /**
+   * Buat post baru
+   */
+  async create(dto: CreatePostDto): Promise<Post> {
+    const newPost = this.postRepository.create({
       username: dto.username || 'Anonymous',
       handle: dto.handle || '@' + (dto.username || 'anon').toLowerCase(),
       content: dto.content,
       image: dto.image,
-      likes: 0,
-      reposts: 0,
-      comments: 0,
-      time: 'baru saja',
-      commentList: [],
-    };
-    this.posts.unshift(post);
-    return Promise.resolve(post);
+    });
+
+    return await this.postRepository.save(newPost);
   }
 
-  delete(id: number): Promise<boolean> {
-    const idx = this.posts.findIndex((p) => p.id === id);
-    if (idx === -1) return Promise.resolve(false);
-    this.posts.splice(idx, 1);
-    return Promise.resolve(true);
+  /**
+   * Update data post
+   */
+  async update(id: number, dto: Partial<Post>): Promise<Post> {
+    await this.postRepository.update(id, dto);
+    const updatedPost = await this.postRepository.findOneBy({ id });
+
+    if (!updatedPost) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+
+    return updatedPost;
   }
 
-  update(id: number, payload: Partial<CreatePostDto>): Promise<Post | null> {
-    const idx = this.posts.findIndex((p) => p.id === id);
-    if (idx === -1) return Promise.resolve(null);
-    const post = this.posts[idx];
-    // Only allow updating content and image for now
-    if (typeof payload.content !== 'undefined')
-      post.content = payload.content as string;
-    if (typeof payload.image !== 'undefined')
-      post.image = payload.image as string;
-    // update time to indicate edited (simple label)
-    post.time = 'baru saja';
-    this.posts[idx] = post;
-    return Promise.resolve(post);
+  /**
+   * Hapus post berdasarkan ID
+   */
+  async delete(id: number): Promise<boolean> {
+    const result = await this.postRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+    return true; // ✅ return boolean agar cocok dengan controller
   }
 }
