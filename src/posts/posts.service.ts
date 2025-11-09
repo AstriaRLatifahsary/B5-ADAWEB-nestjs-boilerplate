@@ -7,11 +7,11 @@ export class PostsService {
   private posts: Post[] = [];
   private idCounter = 1000;
 
-  findAll(): Post[] {
-    return this.posts;
+  findAll(): Promise<Post[]> {
+    return Promise.resolve(this.posts);
   }
 
-  create(dto: CreatePostDto): Post {
+  create(dto: CreatePostDto): Promise<Post> {
     const post: Post = {
       id: ++this.idCounter,
       username: dto.username || 'Anonymous',
@@ -25,30 +25,28 @@ export class PostsService {
       commentList: [],
     };
     this.posts.unshift(post);
-    return post;
+    return Promise.resolve(post);
   }
 
-  delete(id: number): boolean {
+  delete(id: number): Promise<boolean> {
     const idx = this.posts.findIndex((p) => p.id === id);
-    if (idx === -1) return false;
+    if (idx === -1) return Promise.resolve(false);
     this.posts.splice(idx, 1);
-    return true;
+    return Promise.resolve(true);
   }
 
-  update(id: number, payload: Partial<CreatePostDto>): Post | null {
+  update(id: number, payload: Partial<CreatePostDto>): Promise<Post | null> {
     const idx = this.posts.findIndex((p) => p.id === id);
-    if (idx === -1) return null;
+    if (idx === -1) return Promise.resolve(null);
     const post = this.posts[idx];
-
     // Only allow updating content and image for now
     if (typeof payload.content !== 'undefined')
       post.content = payload.content as string;
     if (typeof payload.image !== 'undefined')
       post.image = payload.image as string;
-
-    // Update time to indicate edited (simple label)
+    // update time to indicate edited (simple label)
     post.time = 'baru saja';
     this.posts[idx] = post;
-    return post;
+    return Promise.resolve(post);
   }
 }

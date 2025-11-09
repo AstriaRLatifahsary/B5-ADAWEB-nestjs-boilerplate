@@ -23,8 +23,8 @@
 
     <div class="container">
       <main class="content">
-        <%- body %>
-        <%- mainContent %>
+  <%- body %>
+  <%- typeof mainContent !== 'undefined' ? mainContent : '' %>
       </main>
 
       <aside class="sidebar">

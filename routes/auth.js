@@ -64,6 +64,13 @@ router.get(['/logout', '/auth/logout'], authController.logout);
 // Redirect root auth path to login
 router.get('/', (req, res) => res.redirect('/login'));
 
+// AJAX: check username availability
+router.get('/check-username', (req, res) => {
+  // returns JSON { available: true|false }
+  const controller = require('../controllers/authController');
+  return controller.checkUsername(req, res);
+});
+
 // Profile routes
 router.get(['/profile', '/users/profile'], authController.showProfile);
 router.post(

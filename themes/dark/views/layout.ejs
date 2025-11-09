@@ -24,7 +24,7 @@
     <div class="container">
       <main class="content">
         <%- body %>
-        <%- mainContent %>
+        <%- typeof mainContent !== 'undefined' ? mainContent : '' %>
       </main>
 
       <aside class="sidebar">
