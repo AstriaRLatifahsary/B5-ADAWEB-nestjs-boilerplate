@@ -319,12 +319,13 @@ PluginManager.register({
             if (!newContent) return alert('Isi tidak boleh kosong!');
 
             const currentUser = JSON.parse(localStorage.getItem('user'));
-            const username = currentUser?.username || 'Kamu';
+            const name = currentUser?.name || currentUser?.username || 'Kamu';
+            const username = currentUser?.username || currentUser?.handle || '';
 
             const res = await fetch('http://localhost:3000/posts/' + currentEditId, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ content: newContent, username }),
+              body: JSON.stringify({ content: newContent, name, username }),
             });
 
             if (res.ok) {
@@ -338,12 +339,13 @@ PluginManager.register({
           // Konfirmasi hapus
           document.getElementById('confirmDelete').onclick = async () => {
             const currentUser = JSON.parse(localStorage.getItem('user'));
-            const username = currentUser?.username || 'Kamu';
+            const name = currentUser?.name || currentUser?.username || 'Kamu';
+            const username = currentUser?.username || currentUser?.handle || '';
 
             const res = await fetch('http://localhost:3000/posts/' + currentDeleteId, {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username }),
+              body: JSON.stringify({ name, username }),
             });
 
             if (res.ok) {
@@ -379,6 +381,27 @@ PluginManager.register({
           const emojiPicker = document.getElementById('emoji-picker');
           const contentEl = document.getElementById('new-post-content');
 
+          // small helper to show relative time for newly created posts
+          const timeAgo = (dateString) => {
+            if (!dateString) return 'Baru saja';
+            const date = new Date(dateString);
+            const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+            const intervals = {
+              tahun: 31536000,
+              bulan: 2592000,
+              minggu: 604800,
+              hari: 86400,
+              jam: 3600,
+              menit: 60,
+            };
+            for (const unit in intervals) {
+              const value = intervals[unit];
+              const amount = Math.floor(seconds / value);
+              if (amount >= 1) return amount + ' ' + unit + ' yang lalu';
+            }
+            return 'Baru saja';
+          };
+
           // Toggle tampil/hidden
           emojiBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -411,23 +434,28 @@ PluginManager.register({
               if (!content && !image) return;
 
               const currentUser = JSON.parse(localStorage.getItem('user'));
-              const username = currentUser?.username || 'Kamu';
+              // New DB schema: name = full name, username = handle (e.g. @elonmusk)
+              const name = currentUser?.name || currentUser?.username || 'Kamu';
+              const username = currentUser?.username || currentUser?.handle || '';
 
               const res = await fetch('http://localhost:3000/posts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, content, image }), // ✅ kirim username
+                body: JSON.stringify({ name, username, content, image }), // send name + username per new schema
               });
 
               if (!res.ok) return;
               const post = await res.json();
 
+              // compute a human friendly time right away
+              const renderedTime = post.time_post ? timeAgo(post.time_post) : post.createdAt ? timeAgo(post.createdAt) : 'Baru saja';
+
               const feed = document.querySelector('.social-feed');
               const div = document.createElement('div');
               div.className = 'post';
               div.dataset.id = post.id;
-              div.innerHTML = \`
-                <div class="post-header"><strong>\${post.username}</strong><span class="handle">\${post.handle}</span></div>
+                div.innerHTML = \`
+                <div class="post-header"><strong>\${post.name}</strong><span class="handle">\${post.username}</span><span class="time">\${renderedTime}</span></div>
                 <div class="post-content">\${post.content}</div>
                 \${post.image ? '<img src="\${post.image}" class="post-img">' : ''}
                 <div class="post-actions">

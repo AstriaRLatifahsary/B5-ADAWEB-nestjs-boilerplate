@@ -1,4 +1,4 @@
-// routes/auth.js
+//routes/auth.js
 /* eslint-disable @typescript-eslint/no-require-imports */
 const express = require('express');
 const router = express.Router();

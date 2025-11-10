@@ -85,7 +85,7 @@ PluginManager.register({
       </style>
 
       <div class="recent-posts">
-        <h3>📰 Recent Posts</h3>
+        <h3>📰 Trending Topic</h3>
         <ul>
           ${posts
             .map(

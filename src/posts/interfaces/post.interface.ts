@@ -1,12 +1,12 @@
 export interface Post {
   id: number;
-  username: string;
-  handle: string;
+  name: string; // full name of the poster
+  username: string; // username (e.g. @elonmusk)
   content: string;
   image?: string;
   likes: number;
   reposts: number;
   comments: number;
-  time: string;
+  createdAt: string;
   commentList: any[];
 }

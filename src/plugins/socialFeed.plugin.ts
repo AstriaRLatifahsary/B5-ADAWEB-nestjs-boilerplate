@@ -8,7 +8,21 @@ PluginManager.register({
       const response = await fetch('http://localhost:3000/posts');
       const posts = await response.json();
 
-      if (!posts || posts.length === 0) {
+      // Defensive handling: some responses may wrap the array (e.g. { data: [...] })
+      let postArray: any = posts;
+      if (!Array.isArray(postArray)) {
+        if (posts && Array.isArray(posts.data)) postArray = posts.data;
+        else if (posts && Array.isArray(posts.items)) postArray = posts.items;
+        else if (posts && Array.isArray(posts.rows)) postArray = posts.rows;
+      }
+
+      if (!Array.isArray(postArray)) {
+        // Log unexpected payload to help debugging; return a friendly message instead of crashing
+        console.error('Unexpected posts payload (expected array):', posts);
+        return `<div class="empty-feed">Gagal memuat feed 😔</div>`;
+      }
+
+      if (postArray.length === 0) {
         return `<div class="empty-feed">Belum ada postingan 😅</div>`;
       }
 
@@ -30,13 +44,13 @@ PluginManager.register({
         return 'Baru saja';
       };
 
-      const items = posts
+      const items = postArray
         .map(
           (p: any) => `
           <div class="post" data-id="${p.id}">
-            <div class="post-header">
-              <strong>${p.username ?? 'Anonim'}</strong>
-              <span class="handle">${p.handle ?? ''}</span>
+              <div class="post-header">
+              <strong>${p.name && String(p.name).trim() ? p.name : 'Anonim'}</strong>
+              <span class="handle">${p.username && String(p.username).trim() ? p.username : ''}</span>
               <span class="time">${
                 p.time_post
                   ? timeAgo(p.time_post)
@@ -165,7 +179,7 @@ PluginManager.register({
         </style>
 
         <div class="social-feed">
-          <h3>🔥 Trending Feed</h3>
+          <h3>🔥 For You</h3>
           ${items}
         </div>
 

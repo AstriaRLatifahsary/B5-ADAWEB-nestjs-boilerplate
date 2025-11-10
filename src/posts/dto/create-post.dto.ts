@@ -1,7 +1,11 @@
 export class CreatePostDto {
-  username: string;
-  handle?: string;
-  content: string;
+  // full name
+  name?: string;
+
+  // handle (e.g. @elonmusk)
+  username?: string;
+
+  content?: string;
   image?: string;
   imageFile?: any;
 }

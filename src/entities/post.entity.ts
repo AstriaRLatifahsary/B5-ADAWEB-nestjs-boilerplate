@@ -1,8 +1,8 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('posts')
@@ -10,14 +10,16 @@ export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
+  // `name` = full name of the poster
+  @Column()
+  name: string;
+
+  //username (e.g. @elonmusk)
   @Column()
   username: string;
 
-  @Column()
-  handle: string;
-
-  @Column({ type: 'text' })
-  content: string;
+  @Column({ type: 'text', nullable: true })
+  content?: string;
 
   @Column({ nullable: true })
   image?: string;
@@ -31,9 +33,6 @@ export class Post {
   // 🔹 Tambahkan ini:
   @Column({ default: 0 })
   comments: number;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  time_post: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
