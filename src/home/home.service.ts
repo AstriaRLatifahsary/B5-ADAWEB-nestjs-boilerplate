@@ -12,6 +12,6 @@ export class HomeService {
 
   // ✅ fungsi tambahan
   getWelcomeMessage() {
-    return 'Selamat datang di aplikasi NestJS Boilerplate dengan EJS!';
+    return 'Selamat datang di aplikasi Sosial Media Mini!';
   }
 }

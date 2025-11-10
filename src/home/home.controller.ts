@@ -17,7 +17,7 @@ export class HomeController {
     const mainContent = await AreaManager.renderArea('main');
 
     res.render('home', {
-      title: 'Halaman Utama NestJS Boilerplate',
+      title: 'Halaman Utama Sosial Media Mini',
       message,
       sidebarContent,
       navSidebarContent,
