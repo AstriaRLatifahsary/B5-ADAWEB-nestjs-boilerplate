@@ -1,42 +1,36 @@
 import {
   Controller,
   Get,
-  Post as HttpPost,
-  Body,
+  Post,
+  Patch,
   Delete,
+  Body,
   Param,
-  Put,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from '../entities/post.entity'; // ✅ ubah ke entity, bukan interface
 
-@Controller('api/posts')
+@Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  getAll(): Promise<Post[]> {
+  async findAll() {
     return this.postsService.findAll();
   }
 
-  @HttpPost()
-  create(@Body() dto: CreatePostDto): Promise<Post> {
+  @Post()
+  async create(@Body() dto: CreatePostDto) {
     return this.postsService.create(dto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<{ success: boolean }> {
-    await this.postsService.delete(Number(id));
-    return { success: true }; // ✅ ubah, tidak perlu Promise.resolve
+  @Patch(':id')
+  async update(@Param('id') id: number, @Body() dto: any) {
+    return this.postsService.update(id, dto);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() body: Partial<CreatePostDto>,
-  ): Promise<Post> {
-    const updated = await this.postsService.update(Number(id), body);
-    return updated;
+  @Delete(':id')
+  async delete(@Param('id') id: number) {
+    return this.postsService.delete(id);
   }
 }

@@ -5,9 +5,22 @@ import { PostsController } from './posts.controller';
 import { Post } from '../entities/post.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post])],
-  controllers: [PostsController],
-  providers: [PostsService],
-  exports: [PostsService], // ⬅️ penting agar bisa diakses plugin atau module lain
+  imports: [
+    // 🔹 Mendaftarkan entity Post agar bisa diakses lewat Repository di service
+    TypeOrmModule.forFeature([Post]),
+  ],
+  controllers: [
+    // 🔹 Mengatur endpoint /api/posts
+    PostsController,
+  ],
+  providers: [
+    // 🔹 Menyediakan logika bisnis untuk operasi CRUD
+    PostsService,
+  ],
+  exports: [
+    // 🔹 Agar PostsService bisa digunakan di module lain (misalnya FeedModule)
+    PostsService,
+    TypeOrmModule,
+  ],
 })
 export class PostsModule {}

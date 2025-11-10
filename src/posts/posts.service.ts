@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from '../entities/post.entity';
@@ -11,49 +15,75 @@ export class PostsService {
     private readonly postRepository: Repository<Post>,
   ) {}
 
-  /**
-   * Ambil semua post
-   */
-  async findAll(): Promise<Post[]> {
-    return await this.postRepository.find();
+  async findAll(limit = 100): Promise<Post[]> {
+    const posts = await this.postRepository.find({
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+    console.log('📊 Jumlah data dari DB:', posts.length);
+    return posts;
   }
 
-  /**
-   * Buat post baru
-   */
   async create(dto: CreatePostDto): Promise<Post> {
     const newPost = this.postRepository.create({
       username: dto.username || 'Anonymous',
       handle: dto.handle || '@' + (dto.username || 'anon').toLowerCase(),
       content: dto.content,
       image: dto.image,
+      likes: 0,
+      reposts: 0,
+      comments: 0,
     });
 
     return await this.postRepository.save(newPost);
   }
 
   /**
-   * Update data post
+   * 🔹 Update posting — hanya boleh dilakukan oleh pembuatnya
    */
   async update(id: number, dto: Partial<Post>): Promise<Post> {
-    await this.postRepository.update(id, dto);
-    const updatedPost = await this.postRepository.findOneBy({ id });
+    const post = await this.postRepository.findOneBy({ id });
+    if (!post) {
+      throw new NotFoundException(`Post dengan ID ${id} tidak ditemukan`);
+    }
 
+    if (dto.username && dto.username !== post.username) {
+      throw new ForbiddenException(
+        '❌ Kamu tidak diizinkan mengedit postingan ini',
+      );
+    }
+
+    await this.postRepository.update(id, { content: dto.content });
+
+    // ✅ Pastikan return tidak null
+    const updatedPost = await this.postRepository.findOneBy({ id });
     if (!updatedPost) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+      throw new NotFoundException(
+        `Post dengan ID ${id} tidak ditemukan setelah update`,
+      );
     }
 
     return updatedPost;
   }
 
   /**
-   * Hapus post berdasarkan ID
+   * 🔹 Hapus posting — hanya boleh dilakukan oleh pembuatnya
    */
-  async delete(id: number): Promise<boolean> {
-    const result = await this.postRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+  async delete(id: number, username?: string): Promise<boolean> {
+    const post = await this.postRepository.findOneBy({ id });
+    if (!post) {
+      throw new NotFoundException(`Post dengan ID ${id} tidak ditemukan`);
     }
-    return true; // ✅ return boolean agar cocok dengan controller
+
+    if (username && username !== post.username) {
+      throw new ForbiddenException(
+        '❌ Kamu tidak diizinkan menghapus postingan ini',
+      );
+    }
+
+    const result = await this.postRepository.delete(id);
+
+    // ✅ Hindari error "possibly null"
+    return (result.affected ?? 0) > 0;
   }
 }

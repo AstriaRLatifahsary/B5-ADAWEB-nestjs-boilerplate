@@ -32,6 +32,9 @@ export class Post {
   @Column({ default: 0 })
   comments: number;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  time_post: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }

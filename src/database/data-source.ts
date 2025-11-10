@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   host: process.env.DATABASE_HOST || 'localhost',
   port: parseInt(process.env.DATABASE_PORT || '3306', 10),
   username: process.env.DATABASE_USERNAME || 'root',
-  password: process.env.DATABASE_PASSWORD || 'admin123',
+  password: process.env.DATABASE_PASSWORD || 'Astria_31',
   database: process.env.DATABASE_NAME || 'social_app',
   synchronize: true, // otomatis buat tabel
   logging: true, // aktifkan untuk debugging

@@ -9,8 +9,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: this.configService.get('database.type', { infer: true }),
-      url: this.configService.get('database.url', { infer: true }),
+      type: 'mysql',
       host: this.configService.get('database.host', { infer: true }),
       port: this.configService.get('database.port', { infer: true }),
       username: this.configService.get('database.username', { infer: true }),
@@ -23,34 +22,12 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       keepConnectionAlive: true,
       logging:
         this.configService.get('app.nodeEnv', { infer: true }) !== 'production',
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-      cli: {
-        entitiesDir: 'src',
-
-        subscribersDir: 'subscriber',
-      },
+      entities: [__dirname + '/..//*.entity{.ts,.js}'],
+      migrations: [__dirname + '/migrations//*{.ts,.js}'],
       extra: {
-        // based on https://node-postgres.com/apis/pool
-        // max connection pool size
-        max: this.configService.get('database.maxConnections', { infer: true }),
-        ssl: this.configService.get('database.sslEnabled', { infer: true })
-          ? {
-              rejectUnauthorized: this.configService.get(
-                'database.rejectUnauthorized',
-                { infer: true },
-              ),
-              ca:
-                this.configService.get('database.ca', { infer: true }) ??
-                undefined,
-              key:
-                this.configService.get('database.key', { infer: true }) ??
-                undefined,
-              cert:
-                this.configService.get('database.cert', { infer: true }) ??
-                undefined,
-            }
-          : undefined,
+        connectionLimit: this.configService.get('database.maxConnections', {
+          infer: true,
+        }),
       },
     } as TypeOrmModuleOptions;
   }

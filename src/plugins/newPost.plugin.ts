@@ -262,241 +262,146 @@ PluginManager.register({
           const previewImg = document.getElementById('preview-img');
           const submitBtn = document.getElementById('submit-post');
 
-          // Helper: add owner controls (edit + delete) to a post element
-          const addOwnerControls = (div, postId) => {
+          // Tambahkan tombol Edit dan Hapus di setiap post milik user
+          const addOwnerControls = (div, postId, content) => {
             const actionsEl = div.querySelector('.post-actions');
             if (!actionsEl) return;
 
-            // Avoid adding controls twice
-            if (actionsEl.querySelector('.delete-btn') || actionsEl.querySelector('.edit-btn')) return;
+            // Hindari duplikasi tombol
+            if (actionsEl.querySelector('.edit-btn') || actionsEl.querySelector('.delete-btn')) return;
 
-            // EDIT button (pencil icon)
             const editBtn = document.createElement('button');
             editBtn.className = 'tool-button edit-btn';
-            editBtn.setAttribute('aria-label', 'Edit postingan Anda');
-            editBtn.title = 'Edit postingan Anda';
-            editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4h7a1 1 0 0 1 1 1v7"></path><path d="M21 3l-8 8"></path><path d="M3 21l4-1 9-9 1-4-13 13z"></path></svg>';
-            editBtn.style.marginLeft = '8px';
+            editBtn.dataset.id = postId;
+            editBtn.dataset.content = content;
+            editBtn.textContent = '✏️ Edit';
             actionsEl.appendChild(editBtn);
 
-            // DELETE button (trash) — same as before
             const delBtn = document.createElement('button');
             delBtn.className = 'tool-button delete-btn';
-            delBtn.setAttribute('aria-label', 'Hapus postingan Anda');
-            delBtn.title = 'Hapus postingan Anda';
-            delBtn.style.marginLeft = '8px';
-            delBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path></svg>';
+            delBtn.dataset.id = postId;
+            delBtn.textContent = '🗑️ Hapus';
             actionsEl.appendChild(delBtn);
-
-            // Delete handler
-            delBtn.addEventListener('click', async () => {
-              const ok = confirm('Hapus postingan ini?');
-              if (!ok) return;
-              const r = await fetch('/api/posts/' + postId, { method: 'DELETE' });
-              if (!r.ok) {
-                const notif = document.createElement('div');
-                notif.className = 'post-notification error';
-                notif.textContent = 'Gagal menghapus postingan.';
-                document.body.appendChild(notif);
-                setTimeout(() => notif.remove(), 3000);
-                return;
-              }
-              // remove from DOM
-              div.remove();
-              // remove from localStorage
-              try {
-                const myPosts2 = JSON.parse(localStorage.getItem('myPosts') || '[]').filter(id => id !== postId);
-                localStorage.setItem('myPosts', JSON.stringify(myPosts2));
-              } catch (e) {}
-            });
-
-            // Edit handler
-            editBtn.addEventListener('click', () => {
-              const contentEl = div.querySelector('.post-content');
-              if (!contentEl) return;
-              // Prevent multiple editors
-              if (div.querySelector('textarea.edit-area')) return;
-
-              const originalText = contentEl.textContent || '';
-              contentEl.style.display = 'none';
-              const textarea = document.createElement('textarea');
-              textarea.className = 'edit-area';
-              textarea.value = originalText;
-              textarea.rows = 4;
-              textarea.style.width = '100%';
-              contentEl.parentNode.insertBefore(textarea, contentEl);
-
-              // Save / Cancel buttons
-              const saveBtn = document.createElement('button');
-              saveBtn.className = 'tool-button save-edit-btn';
-              saveBtn.textContent = 'Simpan';
-              saveBtn.style.marginLeft = '8px';
-
-              const cancelBtn = document.createElement('button');
-              cancelBtn.className = 'tool-button cancel-edit-btn';
-              cancelBtn.textContent = 'Batal';
-              cancelBtn.style.marginLeft = '6px';
-
-              // Hide edit/delete while editing
-              editBtn.style.display = 'none';
-              delBtn.style.display = 'none';
-              actionsEl.appendChild(saveBtn);
-              actionsEl.appendChild(cancelBtn);
-
-              cancelBtn.addEventListener('click', () => {
-                textarea.remove();
-                contentEl.style.display = 'block';
-                saveBtn.remove();
-                cancelBtn.remove();
-                editBtn.style.display = '';
-                delBtn.style.display = '';
-              });
-
-              saveBtn.addEventListener('click', async () => {
-                const newContent = textarea.value.trim();
-                // PUT to API
-                const r = await fetch('/api/posts/' + postId, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ content: newContent }),
-                });
-                if (!r.ok) {
-                  const notif = document.createElement('div');
-                  notif.className = 'post-notification error';
-                  notif.textContent = 'Gagal menyimpan perubahan.';
-                  document.body.appendChild(notif);
-                  setTimeout(() => notif.remove(), 3000);
-                  return;
-                }
-                const updated = await r.json();
-                // update DOM
-                contentEl.textContent = updated.content || newContent;
-                textarea.remove();
-                contentEl.style.display = 'block';
-                saveBtn.remove();
-                cancelBtn.remove();
-                editBtn.style.display = '';
-                delBtn.style.display = '';
-              });
-            });
           };
 
-          // 📸 klik tombol kamera → buka file picker
-          if (photoBtn && imageInput) {
-            photoBtn.addEventListener('click', () => imageInput.click());
-          }
+          // ==================== GLOBAL EVENT HANDLER ====================
 
-          // � Emoji picker functionality
+          let currentEditId = null;
+          let currentDeleteId = null;
+
+          document.addEventListener('click', (e) => {
+            const target = e.target;
+
+            // ✏️ Tombol Edit diklik
+            if (target.classList.contains('edit-btn')) {
+              currentEditId = target.dataset.id;
+              document.getElementById('editContent').value = target.dataset.content;
+              document.getElementById('editModal').style.display = 'flex';
+            }
+
+            // 🗑️ Tombol Hapus diklik
+            if (target.classList.contains('delete-btn')) {
+              currentDeleteId = target.dataset.id;
+              document.getElementById('deleteModal').style.display = 'flex';
+            }
+          });
+
+          // Tutup modal
+          document.getElementById('cancelEdit').onclick = () =>
+            (document.getElementById('editModal').style.display = 'none');
+
+          document.getElementById('cancelDelete').onclick = () =>
+            (document.getElementById('deleteModal').style.display = 'none');
+
+          // Simpan hasil edit
+          document.getElementById('saveEdit').onclick = async () => {
+            const newContent = document.getElementById('editContent').value.trim();
+            if (!newContent) return alert('Isi tidak boleh kosong!');
+
+            const currentUser = JSON.parse(localStorage.getItem('user'));
+            const username = currentUser?.username || 'Kamu';
+
+            const res = await fetch('http://localhost:3000/posts/' + currentEditId, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: newContent, username }),
+            });
+
+            if (res.ok) {
+              document.getElementById('editModal').style.display = 'none';
+              location.reload();
+            } else {
+              alert('❌ Gagal update.');
+            }
+          };
+
+          // Konfirmasi hapus
+          document.getElementById('confirmDelete').onclick = async () => {
+            const currentUser = JSON.parse(localStorage.getItem('user'));
+            const username = currentUser?.username || 'Kamu';
+
+            const res = await fetch('http://localhost:3000/posts/' + currentDeleteId, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username }),
+            });
+
+            if (res.ok) {
+              document.getElementById('deleteModal').style.display = 'none';
+              location.reload();
+            } else {
+              alert('❌ Gagal hapus.');
+            }
+          };
+
+          // Klik luar modal untuk menutup
+          window.onclick = (e) => {
+            if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+          };
+
+
+          // ==================== 📸 IMAGE UPLOAD HANDLER ====================
+          photoBtn.addEventListener('click', () => imageInput.click());
+
+          imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              previewImg.src = ev.target.result;
+              previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+          });
+
+          // ==================== 😊 EMOJI PICKER HANDLER ====================
           const emojiBtn = document.getElementById('emoji-btn');
           const emojiPicker = document.getElementById('emoji-picker');
-          const contentTextarea = document.getElementById('new-post-content');
+          const contentEl = document.getElementById('new-post-content');
 
-          if (emojiBtn && emojiPicker && contentTextarea) {
-            // Toggle emoji picker
-            emojiBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              emojiPicker.classList.toggle('active');
+          // Toggle tampil/hidden
+          emojiBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            emojiPicker.classList.toggle('active');
+          });
+
+          // Klik emoji → tambahkan ke textarea
+          emojiPicker.querySelectorAll('.emoji-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              contentEl.value += btn.textContent;
+              emojiPicker.classList.remove('active');
             });
+          });
 
-            // Close emoji picker when clicking outside
-            document.addEventListener('click', (e) => {
-              if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
-                emojiPicker.classList.remove('active');
-              }
-            });
-
-            // Handle emoji selection
-            const emojiButtons = emojiPicker.querySelectorAll('.emoji-btn');
-            emojiButtons.forEach(btn => {
-              btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const emoji = btn.textContent;
-                const start = contentTextarea.selectionStart;
-                const end = contentTextarea.selectionEnd;
-                const text = contentTextarea.value;
-                const before = text.substring(0, start);
-                const after = text.substring(end);
-                
-                contentTextarea.value = before + emoji + after;
-                contentTextarea.focus();
-                contentTextarea.selectionStart = contentTextarea.selectionEnd = start + emoji.length;
-                
-                // Close picker after selection
-                emojiPicker.classList.remove('active');
-              });
-            });
-          }
-
-          // Decorate existing posts in the feed that belong to this client
-          try {
-            const myPostsOnLoad = JSON.parse(localStorage.getItem('myPosts') || '[]');
-            if (Array.isArray(myPostsOnLoad) && myPostsOnLoad.length) {
-              const feedEl = document.querySelectorAll('.social-feed .post');
-              feedEl.forEach(pEl => {
-                const id = Number(pEl.dataset.id);
-                if (myPostsOnLoad.includes(id)) {
-                  addOwnerControls(pEl, id);
-                }
-              });
+          // Klik di luar picker → tutup
+          document.addEventListener('click', (e) => {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+              emojiPicker.classList.remove('active');
             }
-          } catch (e) {
-            // ignore
-          }
+          });
 
-          // �🖼 tampilkan preview gambar dengan validasi
-          if (imageInput) {
-            imageInput.addEventListener('change', (e) => {
-              const file = e.target.files[0];
-              if (file) {
-                // Validasi ukuran file (max 5MB)
-                const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-                if (file.size > maxSize) {
-                  const notification = document.createElement('div');
-                  notification.className = 'post-notification error';
-                  notification.innerHTML = \`
-                    Ukuran file terlalu besar!<br>
-                    Ukuran saat ini: \${(file.size / 1024 / 1024).toFixed(2)}MB<br>
-                    Batas maksimal: 5MB<br><br>
-                    Silakan pilih file yang lebih kecil.
-                  \`;
-                  document.body.appendChild(notification);
-                  setTimeout(() => notification.remove(), 5000);
-                  imageInput.value = '';
-                  return;
-                }
 
-                // Validasi tipe file
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!validTypes.includes(file.type)) {
-                  const notification = document.createElement('div');
-                  notification.className = 'post-notification error';
-                  notification.innerHTML = \`
-                    Format file tidak didukung!<br>
-                    Format yang diizinkan:<br>
-                    • JPG/JPEG<br>
-                    • PNG<br>
-                    • GIF
-                  \`;
-                  document.body.appendChild(notification);
-                  setTimeout(() => notification.remove(), 5000);
-                  imageInput.value = '';
-                  return;
-                }
-
-                // Jika validasi berhasil, tampilkan preview
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                  previewImg.src = event.target.result;
-                  previewContainer.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-              } else {
-                previewContainer.style.display = 'none';
-              }
-            });
-          }
-
-          // 🚀 submit postingan
+          // 🚀 SUBMIT postingan — ✅ kirim username
           if (submitBtn) {
             submitBtn.addEventListener('click', async () => {
               const contentEl = document.getElementById('new-post-content');
@@ -505,11 +410,15 @@ PluginManager.register({
               const image = previewContainer?.style?.display === 'block' ? previewImg?.src : null;
               if (!content && !image) return;
 
-              const res = await fetch('/api/posts', {
+              const currentUser = JSON.parse(localStorage.getItem('user'));
+              const username = currentUser?.username || 'Kamu';
+
+              const res = await fetch('http://localhost:3000/posts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content, image }),
+                body: JSON.stringify({ username, content, image }), // ✅ kirim username
               });
+
               if (!res.ok) return;
               const post = await res.json();
 
@@ -518,36 +427,27 @@ PluginManager.register({
               div.className = 'post';
               div.dataset.id = post.id;
               div.innerHTML = \`
-                <div class="post-header"><strong>\${post.username}</strong><span class="handle">\${post.handle}</span><span class="time">\${post.time}</span></div>
+                <div class="post-header"><strong>\${post.username}</strong><span class="handle">\${post.handle}</span></div>
                 <div class="post-content">\${post.content}</div>
-                \${post.image && post.image !== 'null' && post.image !== '' ? '<img src="' + post.image + '" class="post-img" style="width:100%;border-radius:12px;margin-top:8px;">' : ''}
+                \${post.image ? '<img src="\${post.image}" class="post-img">' : ''}
                 <div class="post-actions">
                   <button class="like-btn">🤍 \${post.likes}</button>
                   <button class="comment-btn">💬 \${post.comments}</button>
                   <button class="repost-btn">🔄 \${post.reposts}</button>
                 </div>
               \`;
-              // Mark post as belonging to this client (persist in localStorage)
+
               try {
                 const myPosts = JSON.parse(localStorage.getItem('myPosts') || '[]');
                 myPosts.unshift(post.id);
                 localStorage.setItem('myPosts', JSON.stringify(myPosts));
-              } catch (e) {
-                // ignore storage errors
-              }
+              } catch (e) {}
 
-              // Insert post into feed and add delete control if it's user's post
               if (feed) {
                 feed.insertBefore(div, feed.querySelector('.post'));
-
-                // If this is one of user's posts (tracked via localStorage), add owner controls
-                const myPosts = JSON.parse(localStorage.getItem('myPosts') || '[]');
-                if (Array.isArray(myPosts) && myPosts.includes(post.id)) {
-                  addOwnerControls(div, post.id);
-                }
+                addOwnerControls(div, post.id);
               }
 
-              // Reset input
               contentEl.value = '';
               previewContainer.style.display = 'none';
               imageInput.value = '';

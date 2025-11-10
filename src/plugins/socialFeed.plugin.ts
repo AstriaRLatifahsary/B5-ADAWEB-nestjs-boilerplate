@@ -1,328 +1,302 @@
 import { PluginManager } from '../common/pluginManager';
 
-interface Reply {
-  username: string;
-  content: string;
-  time: string;
-}
-
-interface Comment {
-  username: string;
-  content: string;
-  time: string;
-  replies?: Reply[];
-}
-
-interface Post {
-  id: number;
-  username: string;
-  handle: string;
-  content: string;
-  likes: number;
-  reposts: number;
-  comments: number;
-  time: string;
-  image?: string;
-  commentList: Comment[];
-}
-
 PluginManager.register({
   name: 'socialFeed',
 
-  render: (): Promise<string> => {
-    const randomLikes = () => Math.floor(Math.random() * 900) + 20;
-    const randomReposts = () => Math.floor(Math.random() * 200) + 5;
-    const randomHours = () => `${Math.floor(Math.random() * 23) + 1} jam lalu`;
+  render: async (): Promise<string> => {
+    try {
+      const response = await fetch('http://localhost:3000/posts');
+      const posts = await response.json();
 
-    // 🔹 50 komentar dummy unik berbahasa Indonesia
-    const allComments = [
-      'Postingan ini sangat inspiratif!',
-      'Wah, nggak nyangka bisa sebagus ini!',
-      'Informasi yang sangat berguna, terima kasih!',
-      'Mantap banget hasilnya 💪',
-      'Saya baru tahu soal ini, menarik sekali!',
-      'Ide yang brilian, harus dicoba!',
-      'Keren banget konsepnya 🔥',
-      'Setuju! Ini langkah yang tepat 👍',
-      'Suka banget cara penyampaiannya!',
-      'Semoga makin banyak update seperti ini!',
-      'Boleh juga nih buat dijadikan referensi 😄',
-      'Kontennya menarik banget, lanjut terus!',
-      'Wah ini bikin semangat belajar lagi!',
-      'Nggak nyangka bakal se-efektif ini!',
-      'Bener banget, saya juga merasakan hal yang sama!',
-      'Visualnya keren, simple tapi impactful!',
-      'Topiknya relevan banget sama kondisi sekarang!',
-      'Terinspirasi banget baca ini ✨',
-      'Suka gaya komunikasinya, ringan tapi dalam!',
-      'Tolong bahas topik ini lebih dalam lagi ya!',
-      'Wah keren banget hasil eksperimennya!',
-      'Menarik banget pembahasannya!',
-      'Baru tahu ada hal seperti ini di bidang AI!',
-      'Salut dengan effortnya, luar biasa!',
-      'Suka banget detail yang dijelaskan di sini!',
-      'Ini baru konten berkualitas 👏',
-      'Terima kasih sudah berbagi informasi seperti ini!',
-      'Wah kalau begini masa depan teknologi makin seru!',
-      'Bisa dijelasin lebih lanjut di posting berikutnya?',
-      'Konten seperti ini yang saya tunggu-tunggu!',
-      'Semangat terus berkarya 💫',
-      'Postingan ini bikin saya mikir ulang 😮',
-      'Luar biasa inovatif!',
-      'Penjelasannya mudah dipahami banget!',
-      'Wah keren, jadi pengen belajar lebih dalam!',
-      'Suka banget vibe positifnya!',
-      'Nggak sabar lihat versi selanjutnya!',
-      'Postingan ini benar-benar relate banget!',
-      'Suka banget sama pendekatannya!',
-      'Informasinya padat tapi jelas 💡',
-      'Wah jadi tahu hal baru lagi, mantap!',
-      'Cocok banget buat pemula yang baru belajar!',
-      'Saya udah coba juga, hasilnya bagus!',
-      'Setuju banget sama poin ini!',
-      'Inspiratif banget buat generasi muda!',
-      'Suka banget gaya visualnya 🎨',
-      'Nggak nyangka bisa sepopuler ini!',
-      'Wah baru sadar ini penting banget!',
-      'Bener-bener keren deh! 🔥',
-      'Suka banget sama insight-nya!',
-    ];
-
-    const sampleUsers = [
-      'TechLover',
-      'IndieDev',
-      'SpaceNerd',
-      'CryptoKid',
-      'CodeMaster',
-      'AI_Junkie',
-      'TravelerX',
-      'MusicSoul',
-      'Dreamer123',
-      'ArtGeek',
-    ];
-
-    const usedIndices = new Set<number>();
-    const randomUniqueComment = (): Comment => {
-      let index;
-      do {
-        index = Math.floor(Math.random() * allComments.length);
-      } while (usedIndices.has(index) && usedIndices.size < allComments.length);
-      usedIndices.add(index);
-
-      return {
-        username: sampleUsers[Math.floor(Math.random() * sampleUsers.length)],
-        content: allComments[index],
-        time: `${Math.floor(Math.random() * 59) + 1} menit lalu`,
-        replies: [],
-      };
-    };
-
-    // 🔹 Postingan utama — sudah diterjemahkan ke Bahasa Indonesia
-    const posts: Post[] = [
-      {
-        id: 1,
-        username: 'Elon Musk',
-        handle: '@elonmusk',
-        content: 'Penerbangan Starship ke-3 dijadwalkan minggu depan 🚀🔥',
-        likes: 980,
-        reposts: 422,
-        comments: 3,
-        time: '1 jam lalu',
-        image:
-          'https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&w=800&q=80',
-        commentList: [
-          randomUniqueComment(),
-          randomUniqueComment(),
-          randomUniqueComment(),
-        ],
-      },
-      {
-        id: 2,
-        username: 'OpenAI',
-        handle: '@OpenAI',
-        content:
-          'Memperkenalkan GPT-5 — lebih cerdas, lebih cepat, dan lebih bermanfaat dari sebelumnya.',
-        likes: 1200,
-        reposts: 530,
-        comments: 3,
-        time: '2 jam lalu',
-        image:
-          'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
-        commentList: [
-          randomUniqueComment(),
-          randomUniqueComment(),
-          randomUniqueComment(),
-        ],
-      },
-      {
-        id: 3,
-        username: 'Taylor Swift',
-        handle: '@taylorswift13',
-        content:
-          'Sangat bersyukur atas semua cinta kalian selama The Eras Tour 💕🎶',
-        likes: 890,
-        reposts: 312,
-        comments: 2,
-        time: '3 jam lalu',
-        image:
-          'https://images.unsplash.com/photo-1507878866276-a947ef722fee?auto=format&fit=crop&w=800&q=80',
-        commentList: [randomUniqueComment(), randomUniqueComment()],
-      },
-      {
-        id: 4,
-        username: 'NASA',
-        handle: '@nasa',
-        content:
-          '🌕 Pengujian rover bulan berhasil diselesaikan! Langkah selanjutnya: misi Artemis.',
-        likes: 650,
-        reposts: 212,
-        comments: 2,
-        time: '5 jam lalu',
-        image:
-          'https://images.unsplash.com/photo-1580428180121-88a88f69b5e5?auto=format&fit=crop&w=800&q=80',
-        commentList: [randomUniqueComment(), randomUniqueComment()],
-      },
-    ];
-
-    // 🔁 Tambahan postingan dummy (hingga 100)
-    const topics = [
-      'kecerdasan buatan',
-      'teknologi',
-      'startup',
-      'game',
-      'pemrograman',
-      'musik',
-      'film',
-      'perjalanan',
-      'gaya hidup',
-      'produktifitas',
-      'pendidikan',
-      'keamanan siber',
-      'web3',
-      'blockchain',
-      'AR/VR',
-      'desain',
-      'antariksa',
-      'sains',
-    ];
-
-    for (let i = 5; i <= 100; i++) {
-      const topic = topics[Math.floor(Math.random() * topics.length)];
-      const hasImage = Math.random() < 0.3;
-      const commentCount = Math.floor(Math.random() * 3) + 1;
-
-      const generatedComments: Comment[] = [];
-      for (let j = 0; j < commentCount; j++) {
-        generatedComments.push(randomUniqueComment());
+      if (!posts || posts.length === 0) {
+        return `<div class="empty-feed">Belum ada postingan 😅</div>`;
       }
 
-      posts.push({
-        id: i,
-        username: `User${i}`,
-        handle: `@user${i}`,
-        content: `Pemikiran terkini tentang ${topic} — bagaimana pendapatmu soal inovasi terbaru di bidang ini? #${topic.replace(' ', '')}`,
-        likes: randomLikes(),
-        reposts: randomReposts(),
-        comments: commentCount,
-        time: randomHours(),
-        image: hasImage
-          ? `https://picsum.photos/seed/${topic}-${i}/600/400`
-          : undefined,
-        commentList: generatedComments,
-      });
-    }
-
-    const renderReplies = (replies?: Reply[]) => `
-      <div class="replies">
-        ${
-          replies && replies.length
-            ? replies
-                .map(
-                  (r) => `
-              <div class="reply">
-                <strong>${r.username}</strong>: ${r.content}
-                <span class="comment-time">${r.time}</span>
-              </div>`,
-                )
-                .join('')
-            : ''
+      const timeAgo = (dateString: string) => {
+        const date = new Date(dateString);
+        const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+        const intervals: Record<string, number> = {
+          tahun: 31536000,
+          bulan: 2592000,
+          minggu: 604800,
+          hari: 86400,
+          jam: 3600,
+          menit: 60,
+        };
+        for (const [unit, value] of Object.entries(intervals)) {
+          const amount = Math.floor(seconds / value);
+          if (amount >= 1) return `${amount} ${unit} yang lalu`;
         }
-      </div>
-    `;
+        return 'Baru saja';
+      };
 
-    const items = posts
-      .map(
-        (p) => `
-      <div class="post" data-id="${p.id}">
-        <div class="post-header">
-          <strong>${p.username}</strong>
-          <span class="handle">${p.handle}</span>
-          <span class="time">${p.time}</span>
+      const items = posts
+        .map(
+          (p: any) => `
+          <div class="post" data-id="${p.id}">
+            <div class="post-header">
+              <strong>${p.username ?? 'Anonim'}</strong>
+              <span class="handle">${p.handle ?? ''}</span>
+              <span class="time">${
+                p.time_post
+                  ? timeAgo(p.time_post)
+                  : p.createdAt
+                    ? timeAgo(p.createdAt)
+                    : ''
+              }</span>
+            </div>
+
+            <div class="post-content">${p.content ?? ''}</div>
+            ${
+              p.image
+                ? `<img src="${p.image}" alt="post-image" class="post-image"/>`
+                : ''
+            }
+
+            <div class="post-actions">
+              <button class="like-btn">🤍 ${p.likes ?? 0}</button>
+              <button class="comment-btn">💬 ${p.comments ?? 0}</button>
+              <button class="repost-btn">🔄 ${p.reposts ?? 0}</button>
+              <button class="edit-btn" data-id="${p.id}" data-content="${p.content}">✏️ Edit</button>
+              <button class="delete-btn" data-id="${p.id}">🗑️ Hapus</button>
+            </div>
+
+            <!-- 💬 Komentar -->
+            <div class="comment-section" style="display:none;">
+              <div class="comments-list"></div>
+              <div class="add-comment">
+                <input type="text" placeholder="Tulis komentar..." />
+                <button class="send-comment">Kirim</button>
+              </div>
+            </div>
+          </div>`,
+        )
+        .join('');
+
+      const html = `
+        <style>
+          .social-feed {
+            max-width: 100%;
+            box-sizing: border-box;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            padding-right: 8px;
+          }
+          .post-actions button {
+            margin-right: 6px;
+            border: none;
+            background: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+          }
+          .post-actions button:hover {
+            background:none;
+          }
+
+          /* 🎨 Komentar */
+          .comment-section {
+            margin-top: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+          }
+          .comments-list .comment,
+          .comments-list .reply {
+            background: none;
+            border-radius: 8px;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+          }
+          .comment .reply-toggle {
+            border: none;
+            background: none;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 12px;
+          }
+          .reply-input {
+            display: none;
+            margin-top: 4px;
+            gap: 4px;
+          }
+          .reply-input input {
+            flex: 1;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            padding: 4px 6px;
+          }
+          .reply-input button {
+            border: none;
+            background: #007bff;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+          }
+          .add-comment {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+          }
+          .add-comment input {
+            flex: 1;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            padding: 4px 6px;
+          }
+          .add-comment button {
+            border: none;
+            background: #28a745;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+          }
+
+          /* Modal */
+          .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); justify-content:center; align-items:center; }
+          .modal-content { background-color:#fff; padding:20px; border-radius:12px; width:300px; text-align:center; box-shadow:0 5px 20px rgba(0,0,0,0.3); animation:fadeIn 0.3s ease; }
+          @keyframes fadeIn { from{opacity:0; transform:scale(0.95);} to{opacity:1; transform:scale(1);} }
+          .modal-buttons { margin-top:12px; display:flex; justify-content:space-around; }
+          .btn { padding:6px 12px; border:none; border-radius:8px; cursor:pointer; }
+          .btn-confirm { background:#28a745; color:white; }
+          .btn-cancel { background:#dc3545; color:white; }
+        </style>
+
+        <div class="social-feed">
+          <h3>🔥 Trending Feed</h3>
+          ${items}
         </div>
 
-        <div class="post-content">${p.content}</div>
-        ${p.image ? `<img src="${p.image}" alt="post-image" class="post-image"/>` : ''}
-
-        <div class="post-actions">
-          <button class="like-btn">🤍 ${p.likes}</button>
-          <button class="comment-btn">💬 ${p.comments}</button>
-          <button class="repost-btn">🔄 ${p.reposts}</button>
+        <!-- Modal Edit -->
+        <div id="editModal" class="modal">
+          <div class="modal-content">
+            <h4>✏️ Edit Postingan</h4>
+            <textarea id="editContent"></textarea>
+            <div class="modal-buttons">
+              <button class="btn btn-confirm" id="saveEdit">Simpan</button>
+              <button class="btn btn-cancel" id="cancelEdit">Batal</button>
+            </div>
+          </div>
         </div>
 
-        <div class="comment-section" style="display:none;">
-          <div class="comments-list">
-            ${p.commentList
-              .map(
-                (c) => `
-              <div class="comment">
-                <strong>${c.username}</strong>: ${c.content}
-                <span class="comment-time">${c.time}</span>
+        <!-- Modal Delete -->
+        <div id="deleteModal" class="modal">
+          <div class="modal-content">
+            <h4>🗑️ Hapus Postingan?</h4>
+            <p>Apakah kamu yakin ingin menghapus postingan ini?</p>
+            <div class="modal-buttons">
+              <button class="btn btn-confirm" id="confirmDelete">Ya, Hapus</button>
+              <button class="btn btn-cancel" id="cancelDelete">Batal</button>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          let currentEditId = null;
+          let currentDeleteId = null;
+
+          // ==================== POST EDIT / DELETE ====================
+          document.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('edit-btn')) {
+              currentEditId = target.dataset.id;
+              document.getElementById('editContent').value = target.dataset.content;
+              document.getElementById('editModal').style.display = 'flex';
+            }
+            if (target.classList.contains('delete-btn')) {
+              currentDeleteId = target.dataset.id;
+              document.getElementById('deleteModal').style.display = 'flex';
+            }
+          });
+
+          document.getElementById('cancelEdit').onclick = () =>
+            (document.getElementById('editModal').style.display = 'none');
+          document.getElementById('cancelDelete').onclick = () =>
+            (document.getElementById('deleteModal').style.display = 'none');
+
+          document.getElementById('saveEdit').onclick = async () => {
+            const newContent = document.getElementById('editContent').value.trim();
+            if (!newContent) return alert('Isi tidak boleh kosong!');
+            const res = await fetch('/posts/' + currentEditId, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: newContent }),
+            });
+            if (res.ok) { location.reload(); } else alert('❌ Gagal update.');
+          };
+          document.getElementById('confirmDelete').onclick = async () => {
+            const res = await fetch('/posts/' + currentDeleteId, { method: 'DELETE' });
+            if (res.ok) { location.reload(); } else alert('❌ Gagal hapus.');
+          };
+          window.onclick = (e) => {
+            if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+          };
+
+          // ==================== KOMENTAR INTERAKTIF ====================
+          document.addEventListener('click', (e) => {
+            // toggle komentar
+            const btn = e.target.closest('.comment-btn');
+            if (btn) {
+              const post = btn.closest('.post');
+              const section = post.querySelector('.comment-section');
+              section.style.display = section.style.display === 'none' ? 'block' : 'none';
+            }
+
+            // kirim komentar baru
+            if (e.target.closest('.send-comment')) {
+              const post = e.target.closest('.post');
+              const input = post.querySelector('.add-comment input');
+              const list = post.querySelector('.comments-list');
+              const text = input.value.trim();
+              if (!text) return;
+              const newComment = document.createElement('div');
+              newComment.className = 'comment';
+              newComment.innerHTML = \`
+                <strong>Kamu</strong>: \${text}
+                <span class="comment-time">baru saja</span>
                 <button class="reply-toggle">Balas</button>
-                ${renderReplies(c.replies)}
+                <div class="replies"></div>
                 <div class="reply-input" style="display:none;">
                   <input type="text" placeholder="Balas komentar..." />
                   <button class="send-reply">Kirim</button>
-                </div>
-              </div>`,
-              )
-              .join('')}
-          </div>
-          <div class="add-comment">
-            <input type="text" placeholder="Tulis komentar..." />
-            <button class="send-comment">Kirim</button>
-          </div>
-        </div>
-      </div>`,
-      )
-      .join('');
+                </div>\`;
+              list.appendChild(newComment);
+              input.value = '';
+            }
 
-    const html = `
-      <style>
-        /* Make social feed take more vertical space and be scrollable within viewport */
-        .social-feed {
-          max-width: 100%;
-          box-sizing: border-box;
-          /* allow the feed to extend downward but stay within viewport */
-          max-height: calc(100vh - 160px);
-          overflow-y: auto;
-          padding-right: 8px; /* avoid layout shift when scrollbar appears */
-        }
+            // toggle balasan
+            if (e.target.classList.contains('reply-toggle')) {
+              const parent = e.target.closest('.comment');
+              const replyInput = parent.querySelector('.reply-input');
+              replyInput.style.display = replyInput.style.display === 'none' ? 'flex' : 'none';
+            }
 
-        .social-feed h3 { margin-top: 0; }
+            // kirim balasan
+            if (e.target.classList.contains('send-reply')) {
+              const replyInput = e.target.closest('.reply-input');
+              const input = replyInput.querySelector('input');
+              const text = input.value.trim();
+              if (!text) return;
+              const repliesContainer = replyInput.parentElement.querySelector('.replies');
+              const newReply = document.createElement('div');
+              newReply.className = 'reply';
+              newReply.innerHTML = \`
+                <strong>Kamu</strong>: \${text}
+                <span class="comment-time">baru saja</span>\`;
+              repliesContainer.appendChild(newReply);
+              input.value = '';
+              replyInput.style.display = 'none';
+            }
+          });
+        </script>
+      `;
 
-        .social-feed .post { margin-bottom: 12px; }
-
-        @media (max-width: 600px) {
-          .social-feed { max-height: calc(100vh - 200px); }
-        }
-      </style>
-
-      <div class="social-feed">
-        <h3>🔥 Trending Feed</h3>
-        ${items}
-      </div>
-    `;
-
-    return Promise.resolve(html);
+      return html;
+    } catch (error) {
+      console.error('❌ Gagal mengambil feed:', error);
+      return `<div class="empty-feed">Gagal memuat feed 😔</div>`;
+    }
   },
 });

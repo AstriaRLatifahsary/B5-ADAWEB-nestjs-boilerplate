@@ -27,21 +27,47 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Kirim komentar baru
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.send-comment');
     if (!btn) return;
 
     const post = btn.closest('.post');
+    const postId = post.dataset.id; // pastikan tiap .post ada atribut data-id="{{post.id}}"
     const input = post.querySelector('.add-comment input');
     const list = post.querySelector('.comments-list');
     const text = input.value.trim();
     if (!text) return;
 
-    const newComment = createCommentElement('Kamu', text);
-    list.appendChild(newComment);
-    input.value = '';
+    // ambil user login dari localStorage
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    if (!currentUser || !currentUser.username) {
+      alert('Silakan login terlebih dahulu');
+      return;
+    }
 
-    updateCommentCount(post);
+    try {
+      const res = await fetch(`/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: currentUser.username,
+          content: text,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const newComment = createCommentElement(data.username, data.content);
+        list.appendChild(newComment);
+        input.value = '';
+        updateCommentCount(post);
+      } else {
+        alert('Gagal mengirim komentar');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Terjadi kesalahan saat mengirim komentar');
+    }
   });
 
   // Toggle input balasan
