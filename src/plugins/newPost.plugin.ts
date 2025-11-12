@@ -473,7 +473,8 @@ PluginManager.register({
 
               if (feed) {
                 feed.insertBefore(div, feed.querySelector('.post'));
-                addOwnerControls(div, post.id);
+                // pass the post content so the edit button stores the correct text
+                addOwnerControls(div, post.id, post.content ?? '');
               }
 
               contentEl.value = '';
