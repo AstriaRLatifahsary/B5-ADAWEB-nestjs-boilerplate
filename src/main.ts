@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 import { AreaManager } from './common/areaManager';
 import { setupViewEngine } from './common/viewEngine';
 import './plugins'; // mendaftarkan semua plugin
+import './database/data-source';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

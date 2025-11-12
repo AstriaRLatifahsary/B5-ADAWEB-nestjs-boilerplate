@@ -7,8 +7,8 @@ const bcrypt = require('bcrypt');
 let AppDataSource;
 let AuthUserEntity;
 try {
-  AppDataSource = require('../dist/database/data-source').AppDataSource;
-  AuthUserEntity = require('../dist/auth/auth-user.entity').AuthUser;
+  AppDataSource = require('../dist/src/database/data-source').AppDataSource;
+  AuthUserEntity = require('../dist/src/auth/auth-user.entity').AuthUser;
 } catch (err) {
   void err;
   AppDataSource = null;

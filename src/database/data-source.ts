@@ -5,11 +5,11 @@ import { AuthUser } from '../auth/auth-user.entity';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
-  host: process.env.DATABASE_HOST || 'localhost',
+  host: process.env.DATABASE_HOST,
   port: parseInt(process.env.DATABASE_PORT || '3306', 10),
-  username: process.env.DATABASE_USERNAME || 'root',
-  password: process.env.DATABASE_PASSWORD || 'admin_123',
-  database: process.env.DATABASE_NAME || 'social_app',
+  username: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
   synchronize: true, // otomatis buat tabel
   logging: true, // aktifkan untuk debugging
   entities: [AuthUser], // pastikan entity diimpor dari auth-user.entity.ts
