@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import { AppController } from './app.controller';
 import { AreaManager } from './common/areaManager';
 import { setupViewEngine } from './common/viewEngine';
 import './plugins';
@@ -39,6 +40,11 @@ async function bootstrap() {
 
   // --- VIEW ENGINE ---
   setupViewEngine(app);
+
+  try {
+    const appController = app.get(AppController);
+    (appController as any).app = app;
+  } catch {}
 
   // --- AREA MANAGER (tambahan plugin layout) ---
   AreaManager.registerToArea('sidebar', 'recentPosts');

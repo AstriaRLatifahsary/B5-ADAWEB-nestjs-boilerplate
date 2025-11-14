@@ -21,8 +21,8 @@ export class AppController {
 
     if (this.app) setupViewEngine(this.app);
 
-    // Kembali ke halaman utama
-    return res.redirect('/');
+    const referer = res.req.headers.referer as string | undefined;
+    return res.redirect(referer || '/');
   }
 
   private setTheme(res: Response, theme: 'default' | 'dark') {
