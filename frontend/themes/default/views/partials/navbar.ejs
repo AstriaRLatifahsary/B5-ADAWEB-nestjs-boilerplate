@@ -1,0 +1,66 @@
+<div class="navbar">
+  <div class="nav-left">
+    <button id="sidebarToggle" class="hamburger" aria-label="Buka menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <strong class="brand">ADAWEB</strong>
+  </div>
+  <nav class="nav-menu" aria-label="Primary">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <details class="nav-dropdown" id="categoriesDropdown">
+      <summary>
+  Categories
+        <span id="dropdownIcon" class="dropdown-icon" aria-hidden="true">▼</span>
+      </summary>
+      <div class="dropdown-panel">
+        <a href="/categories/technology">Technology</a>
+        <a href="/categories/business">Business</a>
+        <a href="/categories/lifestyle">Lifestyle</a>
+        <a href="/categories/entertainment">Entertainment</a>
+        <a href="/categories/sports">Sports</a>
+      </div>
+    </details>
+  </nav>
+</div>
+
+<style>
+  .nav-menu { display: flex; align-items: center; gap: 1rem; }
+  .nav-menu a { padding: .4rem .6rem; border-radius: 6px; transition: color .1s; }
+  .nav-menu a:hover { background: none; color: #c2185b; }
+
+  .nav-dropdown { position: relative; }
+  .nav-dropdown summary { list-style: none; cursor: pointer; padding: .4rem .6rem; border-radius: 6px; display: flex; align-items: center; gap: 0.18em; transition: color .1s; }
+  .nav-dropdown summary::-webkit-details-marker { display: none; }
+  .nav-dropdown[open] > summary,
+  .nav-dropdown summary:hover {
+    background: none;
+    color: #c2185b;
+  }
+  .nav-dropdown summary:hover .dropdown-icon,
+  .nav-dropdown[open] > summary .dropdown-icon {
+    color: #c2185b;
+  }
+  .dropdown-icon { color: #fff; font-size: 1em; margin-left: 0.18em; user-select: none; transition: color .1s; }
+  .dropdown-panel { position: absolute; right: 0; top: calc(100% + 8px); background: #ffffff; color: #333; border: 1px solid #EBD1D1; border-radius: 8px; padding: .5rem; min-width: 220px; box-shadow: 0 6px 18px rgba(0,0,0,.12); display: flex; flex-direction: column; }
+  .dropdown-panel a { color: #333; padding: .5rem .6rem; border-radius: 6px; }
+  .dropdown-panel a:hover { background: #FFE3E3; }
+
+  @media (max-width: 768px) {
+    .nav-menu { gap: .6rem; flex-wrap: wrap; justify-content: flex-start; }
+    .dropdown-panel { position: static; box-shadow: none; border: 0; padding: .25rem 0; background: transparent; }
+    .dropdown-panel a { padding-left: 0; }
+    .dropdown-icon { font-size: 1.1em; }
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var dropdown = document.getElementById('categoriesDropdown');
+    var icon = document.getElementById('dropdownIcon');
+    if (dropdown && icon) {
+      dropdown.addEventListener('toggle', function() {
+        icon.textContent = dropdown.open ? '▲' : '▼';
+      });
+    }
+  });
+</script>
