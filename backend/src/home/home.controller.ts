@@ -1,6 +1,6 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AreaManager } from '../common/areaManager';
 import { HomeService } from './home.service';
 
@@ -10,7 +10,10 @@ export class HomeController {
   constructor(private service: HomeService) {}
 
   @Get(['/', '/home'])
-  async getHome(@Res() res: Response) {
+  async getHome(@Req() req: any, @Res() res: Response) {
+    if (!req.session || !req.session.user) {
+      return res.redirect('/login');
+    }
     const message = this.service.getWelcomeMessage();
     const sidebarContent = await AreaManager.renderArea('sidebar');
     const navSidebarContent = await AreaManager.renderArea('nav-sidebar');
