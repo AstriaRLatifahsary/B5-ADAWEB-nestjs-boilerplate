@@ -35,7 +35,7 @@ async function getAuthRepo() {
 }
 
 exports.showLogin = (req, res) => {
-  if (req.session && req.session.user) return res.redirect('/login');
+  if (req.session && req.session.user) return res.redirect('/');
   return res.render('layouts/authLayout', {
     page: 'login',
     layout: false,
@@ -101,7 +101,7 @@ exports.postLogin = async (req, res) => {
 };
 
 exports.showRegister = (req, res) => {
-  if (req.session && req.session.user) return res.redirect('/register');
+  if (req.session && req.session.user) return res.redirect('/');
   return res.render('layouts/authLayout', {
     page: 'register',
     layout: false,
