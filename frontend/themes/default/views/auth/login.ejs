@@ -14,7 +14,8 @@
       <img src="/icons/adaweb_icon.png" alt="ADAWEB" class="auth-logo" />
       <h2 class="form-title">Login</h2>
 
-      <form action="/login" method="post" class="auth-form">
+  <!-- submit to frontend server which will proxy to backend -->
+  <form action="/login" method="post" class="auth-form">
         <label class="sr-only">Username</label>
           <input type="text" name="username" value="<%= typeof username !== 'undefined' ? username : '' %>" placeholder="Username" required />
 

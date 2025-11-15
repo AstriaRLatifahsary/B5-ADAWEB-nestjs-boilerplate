@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || 'Login' %></title>
+    <!-- Auth-specific stylesheet (standalone page, no navbar/sidebar) -->
+    <link rel="stylesheet" href="/css/auth.css" />
+  </head>
+  <body>
+    <!-- Render the auth partial (login/register) inside a centered container -->
+    <main>
+      <div class="auth-container">
+        <!-- include the correct auth partial based on `page` ('login' or 'register') -->
+        <%- include('auth/' + (page || 'login')) %>
+      </div>
+    </main>
+
+    <script src="/js/socialFeed.js"></script>
+  </body>
+</html>

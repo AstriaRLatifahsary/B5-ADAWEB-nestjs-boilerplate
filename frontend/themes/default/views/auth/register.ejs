@@ -12,7 +12,8 @@
       <img src="/icons/adaweb_icon.png" alt="ADAWEB" class="auth-logo" />
       <h2 class="form-title">Create account</h2>
 
-      <form action="/register" method="post" class="auth-form">
+  <!-- submit to frontend server which will proxy to backend -->
+  <form action="/register" method="post" class="auth-form">
         <label class="sr-only">Email</label>
         <input type="email" name="email" value="<%= typeof email !== 'undefined' ? email : '' %>" placeholder="Email" required />
 
