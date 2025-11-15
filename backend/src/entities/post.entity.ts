@@ -3,37 +3,39 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { AuthUser } from '../auth/auth-user.entity';
 
 @Entity('posts')
 export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // `name` = full name of the poster
-  @Column()
-  name: string;
-
-  //username (e.g. @elonmusk)
-  @Column()
-  username: string;
-
   @Column({ type: 'text', nullable: true })
   content?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   image?: string;
 
-  @Column({ default: 0 })
+  @Column({ name: 'likesCount', default: 0 })
   likes: number;
 
-  @Column({ default: 0 })
+  @Column({ name: 'repostsCount', default: 0 })
   reposts: number;
 
-  // 🔹 Tambahkan ini:
-  @Column({ default: 0 })
+  @Column({ name: 'commentsCount', default: 0 })
   comments: number;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @ManyToOne(() => AuthUser, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: AuthUser;
+
+  @ManyToOne(() => Post, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'quoteOfId' })
+  quoteOf?: Post | null;
+
+  @CreateDateColumn({ type: 'datetime', name: 'createdAt' })
   createdAt: Date;
 }

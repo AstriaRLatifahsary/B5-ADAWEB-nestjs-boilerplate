@@ -18,57 +18,75 @@ export class PostsService {
     private readonly authUserRepository: Repository<AuthUser>,
   ) {}
 
-  async findAll(limit = 100): Promise<Post[]> {
-    const posts = await this.postRepository.find({
-      order: { createdAt: 'DESC' },
-      take: limit,
-    });
-    console.log('📊 Jumlah data dari DB:', posts.length);
-    return posts;
+  async findAll(limit = 100): Promise<any[]> {
+    const rows = await this.postRepository.query(
+      `SELECT p.id, p.content, p.image, p.createdAt,
+              u.username AS user_username, u.displayName AS user_displayName,
+              (SELECT COUNT(*) FROM likes l WHERE l.postId = p.id) AS likes,
+              (SELECT COUNT(*) FROM comments c WHERE c.postId = p.id) AS comments,
+              (SELECT COUNT(*) FROM reposts r WHERE r.postId = p.id) AS reposts
+         FROM posts p
+         JOIN users u ON u.id = p.userId
+        ORDER BY p.createdAt DESC
+        LIMIT ?`,
+      [limit],
+    );
+    return rows.map((r: any) => ({
+      id: r.id,
+      content: r.content,
+      image: r.image,
+      likes: Number(r.likes) || 0,
+      reposts: Number(r.reposts) || 0,
+      comments: Number(r.comments) || 0,
+      createdAt: r.createdAt,
+      name: r.user_displayName || r.user_username || 'Anonim',
+      username: r.user_username ? `@${r.user_username}` : '',
+    }));
   }
 
   /**
    * Create a post. If sessionUsername is provided we will derive name and username
    * from the users table (trusted server-side source) instead of relying on client data.
    */
-  async create(dto: CreatePostDto, sessionUsername?: string): Promise<Post> {
-    let name = dto.name || dto.username || 'Kamu';
-    let usernameHandle = dto.username || '';
-
+  async create(dto: CreatePostDto, sessionUsername?: string): Promise<any> {
+    let user: AuthUser | null = null;
     if (sessionUsername) {
-      try {
-        const user = await this.authUserRepository.findOne({
-          where: { username: sessionUsername },
-        });
-        if (user) {
-          name = user.displayName || user.username || name;
-          usernameHandle = user.username || usernameHandle;
-        }
-      } catch (err) {
-        // ignore and fallback to dto values
-        void err;
-      }
-    }
-
-    // normalize handle to start with @
-    if (usernameHandle && !String(usernameHandle).startsWith('@')) {
-      usernameHandle = '@' + String(usernameHandle);
-    } else if (!usernameHandle) {
-      usernameHandle =
-        '@' + String((name || 'anon').replace(/\s+/g, '').toLowerCase());
+      user = await this.authUserRepository.findOne({
+        where: { username: sessionUsername },
+      });
     }
 
     const newPost = this.postRepository.create({
-      name,
-      username: usernameHandle,
+      user: user!,
       content: dto.content,
       image: dto.image,
-      likes: 0,
-      reposts: 0,
-      comments: 0,
     });
 
-    return await this.postRepository.save(newPost);
+    const saved = await this.postRepository.save(newPost);
+    const vm = await this.postRepository.query(
+      `SELECT p.id, p.content, p.image, p.createdAt,
+              u.username AS user_username, u.displayName AS user_displayName,
+              (SELECT COUNT(*) FROM likes l WHERE l.postId = p.id) AS likes,
+              (SELECT COUNT(*) FROM comments c WHERE c.postId = p.id) AS comments,
+              (SELECT COUNT(*) FROM reposts r WHERE r.postId = p.id) AS reposts
+         FROM posts p
+         JOIN users u ON u.id = p.userId
+        WHERE p.id = ?
+        LIMIT 1`,
+      [saved.id],
+    );
+    const r = vm[0];
+    return {
+      id: r.id,
+      content: r.content,
+      image: r.image,
+      likes: Number(r.likes) || 0,
+      reposts: Number(r.reposts) || 0,
+      comments: Number(r.comments) || 0,
+      createdAt: r.createdAt,
+      name: r.user_displayName || r.user_username || 'Anonim',
+      username: r.user_username ? `@${r.user_username}` : '',
+    };
   }
 
   /**
@@ -78,59 +96,67 @@ export class PostsService {
     id: number,
     dto: Partial<Post>,
     sessionUsername?: string,
-  ): Promise<Post> {
-    const post = await this.postRepository.findOneBy({ id });
+  ): Promise<any> {
+    const post = await this.postRepository.findOne({ where: { id }, relations: { user: true } });
     if (!post) {
       throw new NotFoundException(`Post dengan ID ${id} tidak ditemukan`);
     }
 
     // Authorization: verify the requester (by session username) is the post owner
     if (sessionUsername) {
-      const expectedHandle = String(sessionUsername).startsWith('@')
-        ? sessionUsername
-        : '@' + sessionUsername;
-      if (expectedHandle !== post.username) {
-        throw new ForbiddenException(
-          '❌ Kamu tidak diizinkan mengedit postingan ini',
-        );
+      if (sessionUsername !== post.user?.username) {
+        throw new ForbiddenException('❌ Kamu tidak diizinkan mengedit postingan ini');
       }
-    } else if (dto.username && dto.username !== post.username) {
-      // fallback: if no session provided, still prevent someone from changing owner via payload
-      throw new ForbiddenException(
-        '❌ Kamu tidak diizinkan mengedit postingan ini',
-      );
     }
 
     await this.postRepository.update(id, { content: dto.content });
 
     // ✅ Pastikan return tidak null
-    const updatedPost = await this.postRepository.findOneBy({ id });
+    const updatedPost = await this.postRepository.findOne({ where: { id }, relations: { user: true } });
     if (!updatedPost) {
       throw new NotFoundException(
         `Post dengan ID ${id} tidak ditemukan setelah update`,
       );
     }
 
-    return updatedPost;
+    const vm = await this.postRepository.query(
+      `SELECT p.id, p.content, p.image, p.createdAt,
+              u.username AS user_username, u.displayName AS user_displayName,
+              (SELECT COUNT(*) FROM likes l WHERE l.postId = p.id) AS likes,
+              (SELECT COUNT(*) FROM comments c WHERE c.postId = p.id) AS comments,
+              (SELECT COUNT(*) FROM reposts r WHERE r.postId = p.id) AS reposts
+         FROM posts p
+         JOIN users u ON u.id = p.userId
+        WHERE p.id = ?
+        LIMIT 1`,
+      [id],
+    );
+    const r = vm[0];
+    return {
+      id: r.id,
+      content: r.content,
+      image: r.image,
+      likes: Number(r.likes) || 0,
+      reposts: Number(r.reposts) || 0,
+      comments: Number(r.comments) || 0,
+      createdAt: r.createdAt,
+      name: r.user_displayName || r.user_username || 'Anonim',
+      username: r.user_username ? `@${r.user_username}` : '',
+    };
   }
 
   /**
    * 🔹 Hapus posting — hanya boleh dilakukan oleh pembuatnya
    */
   async delete(id: number, sessionUsername?: string): Promise<boolean> {
-    const post = await this.postRepository.findOneBy({ id });
+    const post = await this.postRepository.findOne({ where: { id }, relations: { user: true } });
     if (!post) {
       throw new NotFoundException(`Post dengan ID ${id} tidak ditemukan`);
     }
     // Validate requester matches the post owner using session username
     if (sessionUsername) {
-      const expectedHandle = String(sessionUsername).startsWith('@')
-        ? sessionUsername
-        : '@' + sessionUsername;
-      if (expectedHandle !== post.username) {
-        throw new ForbiddenException(
-          '❌ Kamu tidak diizinkan menghapus postingan ini',
-        );
+      if (sessionUsername !== post.user?.username) {
+        throw new ForbiddenException('❌ Kamu tidak diizinkan menghapus postingan ini');
       }
     }
 

@@ -49,7 +49,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     const dataSource = new DataSource({
       ...options,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // Auto create table (dev only)
+      synchronize: false, // Matikan auto-sync; gunakan skema DB manual yang sudah dibuat
       logging: true,
     });
 

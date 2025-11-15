@@ -8,7 +8,7 @@ export class AuthUser {
   @Column({ unique: true })
   username: string;
 
-  @Column({ nullable: true })
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -17,7 +17,7 @@ export class AuthUser {
   @Column({ nullable: true })
   displayName: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'profilePic', nullable: true, type: 'text' })
   profilePhoto: string;
 
   @Column({ type: 'text', nullable: true })
@@ -31,4 +31,7 @@ export class AuthUser {
 
   @Column({ type: 'int', default: 0 })
   followingCount: number;
+
+  @Column({ type: 'timestamp', name: 'createdAt', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

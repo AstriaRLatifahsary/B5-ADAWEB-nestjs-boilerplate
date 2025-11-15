@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  synchronize: true, // otomatis buat tabel
+  synchronize: false, // gunakan skema DB manual; hindari ALTER TABLE saat data kotor
   logging: true, // aktifkan untuk debugging
   entities: [AuthUser], // pastikan entity diimpor dari auth-user.entity.ts
 });
