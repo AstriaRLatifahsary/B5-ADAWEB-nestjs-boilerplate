@@ -92,10 +92,13 @@ PluginManager.register({
           .social-feed {
             max-width: 100%;
             box-sizing: border-box;
+            /* Make the feed column scroll independently so only the left column scrolls */
             max-height: calc(100vh - 160px);
             overflow-y: auto;
             padding-right: 8px;
           }
+
+          /* sidebar sticky handled in global theme CSS (home.css / homeDark.css) */
           .post-actions button {
             margin-right: 6px;
             border: none;

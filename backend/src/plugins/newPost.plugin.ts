@@ -242,7 +242,7 @@ PluginManager.register({
               </div>
             </div>
           </div>
-          <button id="submit-post">
+          <button id="submit-post" type="button">
             <span class="button-content">
               <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -322,9 +322,9 @@ PluginManager.register({
             const name = currentUser?.name || currentUser?.username || 'Kamu';
             const username = currentUser?.username || currentUser?.handle || '';
 
-            const res = await fetch('http://localhost:3000/posts/' + currentEditId, {
+            const res = await fetch('/posts/' + currentEditId, {
               method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json', 'x-username': username },
               body: JSON.stringify({ content: newContent, name, username }),
             });
 
@@ -342,9 +342,9 @@ PluginManager.register({
             const name = currentUser?.name || currentUser?.username || 'Kamu';
             const username = currentUser?.username || currentUser?.handle || '';
 
-            const res = await fetch('http://localhost:3000/posts/' + currentDeleteId, {
+            const res = await fetch('/posts/' + currentDeleteId, {
               method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json', 'x-username': username },
               body: JSON.stringify({ name, username }),
             });
 
@@ -426,7 +426,11 @@ PluginManager.register({
 
           // 🚀 SUBMIT postingan — ✅ kirim username
           if (submitBtn) {
-            submitBtn.addEventListener('click', async () => {
+            submitBtn.addEventListener('click', async (ev) => {
+              try {
+                ev?.preventDefault?.();
+              } catch {}
+              // Read content and user first, then log and send
               const contentEl = document.getElementById('new-post-content');
               const content = contentEl?.value?.trim();
               const previewContainer = document.getElementById('image-preview');
@@ -437,14 +441,28 @@ PluginManager.register({
               // New DB schema: name = full name, username = handle (e.g. @elonmusk)
               const name = currentUser?.name || currentUser?.username || 'Kamu';
               const username = currentUser?.username || currentUser?.handle || '';
+              // Debug: log current content and user to console before sending
+              try { console.log('Posting: user=', username, 'content=', (content || '').slice(0,200)); } catch (e) {}
 
-              const res = await fetch('http://localhost:3000/posts', {
+              const payload = { name, username, content, image };
+              const res = await fetch('/posts', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, username, content, image }), // send name + username per new schema
+                headers: { 'Content-Type': 'application/json', 'x-username': username },
+                body: JSON.stringify(payload), // send name + username per new schema
               });
 
-              if (!res.ok) return;
+              if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                console.error('Create post failed', res.status, txt);
+                const errMessage = txt || ('Server returned ' + res.status);
+                const notification = document.createElement('div');
+                notification.className = 'post-notification error';
+                notification.textContent = '❌ Gagal membuat posting: ' + errMessage;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 5000);
+                return;
+              }
+
               const post = await res.json();
 
               // compute a human friendly time right away

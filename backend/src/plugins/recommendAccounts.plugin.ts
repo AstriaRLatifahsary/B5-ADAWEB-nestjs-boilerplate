@@ -44,20 +44,27 @@ PluginManager.register({
     return `
       <style>
         .recommend-section {
-          width: 350px;
+          max-width: 100%;
           padding: 10px;
           border-radius: 12px;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+          /* allow horizontal scrolling for the inner carousel */
           overflow-x: auto;
           overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
           transition: background 0.3s, color 0.3s;
+          position: relative;
         }
 
         .recommend-carousel {
-          display: inline-flex;
+          display: flex;
           flex-direction: row;
-          gap: 10px;
+          gap: 12px;
           min-width: max-content;
+          align-items: center;
+          padding-bottom: 6px; /* space for scrollbar */
         }
 
         .recommend-card {
@@ -104,18 +111,15 @@ PluginManager.register({
           transition: all 0.2s;
         }
 
+        /* hide native scrollbar but keep scrolling functionality */
         .recommend-section::-webkit-scrollbar {
-          height: 6px;
-        }
-
-        .recommend-section::-webkit-scrollbar-thumb {
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 3px;
+          display: none;
+          height: 0;
         }
       </style>
 
       <div class="plugin recommend-section">
-        <h3>✨ Rekomendasi Akun</h3>
+        <h3>✨ Recommended Account</h3>
         <div class="recommend-carousel">
           ${accounts
             .map(
@@ -147,12 +151,12 @@ PluginManager.register({
               if (!followed) {
                 count++;
                 btn.textContent = 'Mengikuti';
-                btn.style.opacity = '0.7';
+                btn.classList.add('following');
                 followed = true;
               } else {
                 count--;
                 btn.textContent = 'Ikuti';
-                btn.style.opacity = '1';
+                btn.classList.remove('following');
                 followed = false;
               }
               countEl.textContent = count + ' pengikut';

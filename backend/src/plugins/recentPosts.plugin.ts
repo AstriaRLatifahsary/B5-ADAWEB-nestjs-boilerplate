@@ -6,6 +6,20 @@ PluginManager.register({
     const posts = [
       {
         title:
+          'Pengusutan Kematian Affan Kurniawan - Salah satu tuntutan 17+8 adalah pembentukan tim investigasi atas kematian pengemudi ojol Affan.',
+        date: '2025-11-10',
+      },
+      {
+        title: '#DukunganTransformasiNasional - Tagar ini muncul di X sebagai bentuk dukungan terhadap program transformasi pemerintah.',
+        date: '2025-11-01',
+      },
+      {
+        title:
+          'Warna “Brave Pink” & “Hero Green” — Simbol gerakan 17+8: pink melambangkan keberanian, hijau mewakili harapan.',
+        date: '2025-11-05',
+      },
+      {
+        title:
           'Na Daehoon Resmi Gugat Cerai Julia Prastini, Usai Isu Perselingkuhan Viral',
         date: '2025-10-15',
       },
@@ -23,9 +37,8 @@ PluginManager.register({
 
     return `
       <style>
-        /* compact recent posts */
+        /* compact recent posts - let sidebar control width so it matches both themes */
         .recent-posts {
-          max-width: 350px;
           width: 100%;
           box-sizing: border-box;
           padding: 8px 10px;

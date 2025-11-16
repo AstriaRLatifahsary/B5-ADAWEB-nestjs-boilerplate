@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -49,6 +51,26 @@ export class PostsService {
    * from the users table (trusted server-side source) instead of relying on client data.
    */
   async create(dto: CreatePostDto, sessionUsername?: string): Promise<any> {
+    // Validate input: database enforces a check that either content or image
+    // must be present. Reject early with a helpful 400 instead of letting
+    // the DB raise a constraint error.
+    const hasContent = typeof dto?.content === 'string' && dto.content.trim().length > 0;
+    const hasImage = dto?.image != null && String(dto.image).trim().length > 0;
+    if (!hasContent && !hasImage) {
+      // Log server-side so the developer can inspect terminal output quickly
+      try {
+        const contentPreview = typeof dto?.content === 'string' ? dto.content.slice(0, 250) : null;
+        console.log('POST /posts validation failed:', { hasContent, hasImage, contentPreview, dto });
+      } catch (e) {}
+      // Provide additional debug info in the error so the client can inspect
+      // what the server saw when parsing the incoming body.
+      const contentPreview = typeof dto?.content === 'string' ? dto.content.slice(0, 250) : null;
+      throw new BadRequestException({
+        message: 'Silakan isi `content` atau `image` sebelum membuat posting',
+        details: { hasContent, hasImage, content: contentPreview },
+      });
+    }
+
     let user: AuthUser | null = null;
     if (sessionUsername) {
       user = await this.authUserRepository.findOne({
@@ -56,11 +78,12 @@ export class PostsService {
       });
     }
 
-    const newPost = this.postRepository.create({
-      user: user!,
-      content: dto.content,
-      image: dto.image,
-    });
+    // DB requires posts.userId NOT NULL — enforce authentication server-side
+    if (!user) {
+      throw new UnauthorizedException('Tidak dapat membuat posting: pengguna belum terautentikasi');
+    }
+
+    const newPost = this.postRepository.create({ user: user, content: dto.content, image: dto.image });
 
     const saved = await this.postRepository.save(newPost);
     const vm = await this.postRepository.query(

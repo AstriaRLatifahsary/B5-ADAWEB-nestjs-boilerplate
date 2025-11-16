@@ -8,20 +8,8 @@
   <nav class="nav-menu" aria-label="Primary">
     <a href="/">Home</a>
     <a href="/about">About</a>
-    <details class="nav-dropdown" id="categoriesDropdown">
-      <summary>
-  Categories
-        <span id="dropdownIcon" class="dropdown-icon" aria-hidden="true">▼</span>
-      </summary>
-      <div class="dropdown-panel">
-        <a href="/categories/technology">Technology</a>
-        <a href="/categories/business">Business</a>
-        <a href="/categories/lifestyle">Lifestyle</a>
-        <a href="/categories/entertainment">Entertainment</a>
-        <a href="/categories/sports">Sports</a>
-      </div>
-    </details>
-    <a class="theme-toggle" href="/switch-theme">Switch Theme</a>
+    <!-- Categories menu removed -->
+    <a class="theme-toggle" href="#">Switch Theme</a>
   </nav>
 </div>
 
@@ -54,14 +42,4 @@
     .dropdown-icon { font-size: 1.1em; }
   }
 </style>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var dropdown = document.getElementById('categoriesDropdown');
-    var icon = document.getElementById('dropdownIcon');
-    if (dropdown && icon) {
-      dropdown.addEventListener('toggle', function() {
-        icon.textContent = dropdown.open ? '▲' : '▼';
-      });
-    }
-  });
-</script>
+<!-- Categories script removed -->

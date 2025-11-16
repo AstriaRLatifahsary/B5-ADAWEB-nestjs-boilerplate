@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-  <link rel="stylesheet" href="/css/homeDark.css">
   <head>
     <%- include('partials/header') %>
+    <link id="theme-stylesheet" rel="stylesheet" href="/css/homeDark.css">
   </head>
   <body>
     <%- include('partials/navbar') %>
@@ -21,15 +21,17 @@
       </nav>
     </aside>
 
-    <div class="container">
-      <main class="content">
-        <%- body %>
-        <%- typeof mainContent !== 'undefined' ? mainContent : '' %>
-      </main>
+    <div id="appContent" class="app-content">
+      <div class="container">
+        <main class="content">
+          <%- body %>
+          <%- typeof mainContent !== 'undefined' ? mainContent : '' %>
+        </main>
 
-      <aside class="sidebar">
-        <%- typeof sidebarContent !== 'undefined' ? sidebarContent : '' %>
-      </aside>
+        <aside class="sidebar">
+          <%- typeof sidebarContent !== 'undefined' ? sidebarContent : '' %>
+        </aside>
+      </div>
     </div>
 
     <script>
@@ -43,14 +45,18 @@
           drawer.setAttribute('aria-hidden', 'false');
           overlay.hidden = false;
           btn.setAttribute('aria-expanded', 'true');
-          document.body.style.overflow = 'hidden';
+          const app = document.getElementById('appContent');
+          if (app) app.style.overflow = 'hidden';
+          document.body.classList.add('drawer-open');
         }
         function closeDrawer() {
           drawer.classList.remove('open');
           drawer.setAttribute('aria-hidden', 'true');
           overlay.hidden = true;
           btn.setAttribute('aria-expanded', 'false');
-          document.body.style.overflow = '';
+          const app = document.getElementById('appContent');
+          if (app) app.style.overflow = '';
+          document.body.classList.remove('drawer-open');
         }
         btn.addEventListener('click', () => {
           if (drawer.classList.contains('open')) closeDrawer(); else openDrawer();
@@ -60,6 +66,8 @@
       })();
     </script>
 
+    <script src="/js/themeToggle.js"></script>
+    <script src="/js/toast.js"></script>
     <script src="/js/socialFeed.js"></script>
   </body>
 </html>
