@@ -35,4 +35,35 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem(THEME_KEY, next);
     applyTheme(next);
   });
+
+  // Also support sidebar theme links: <a class="theme-btn" href="/theme/dark">Dark</a>
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('.theme-btn');
+    if (!link) return;
+    e.preventDefault();
+    // Determine theme from href (/theme/dark or /theme/light) or data-theme
+    const href = link.getAttribute('href') || '';
+    let theme = link.dataset.theme;
+    if (!theme && href) {
+      const parts = href.split('/').filter(Boolean);
+      theme = parts.length ? parts[parts.length - 1] : '';
+    }
+    if (theme === 'light') theme = 'default';
+    if (!theme) theme = currentTheme();
+    localStorage.setItem(THEME_KEY, theme);
+    applyTheme(theme);
+    // If the sidebar drawer is open, try to close it for better UX
+    const drawer = document.getElementById('appDrawer');
+    const overlay = document.getElementById('drawerOverlay');
+    const btn = document.getElementById('sidebarToggle');
+    if (drawer && drawer.classList.contains('open')) {
+      drawer.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      if (overlay) overlay.hidden = true;
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+      const app = document.getElementById('appContent');
+      if (app) app.style.overflow = '';
+      document.body.classList.remove('drawer-open');
+    }
+  });
 });

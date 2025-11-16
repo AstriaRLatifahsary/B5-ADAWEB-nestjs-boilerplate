@@ -173,6 +173,63 @@ app.post('*', async (req, res) => {
   }
 });
 
+// Generic proxy for other HTTP methods (PUT / PATCH / DELETE)
+async function proxyAnyToBackend(req, res, method) {
+  try {
+    const backendPath = req.originalUrl || req.url;
+
+    // Attempt to preserve content-type and body for methods that may send one
+    const incomingType = req.headers['content-type'] || 'application/json';
+    let bodyToSend;
+    let contentTypeToSend = incomingType;
+
+    if (['POST', 'PUT', 'PATCH'].includes(method)) {
+      if (incomingType.includes('application/json')) {
+        bodyToSend = JSON.stringify(req.body || {});
+      } else if (incomingType.includes('application/x-www-form-urlencoded')) {
+        const params = new URLSearchParams();
+        for (const k of Object.keys(req.body || {})) params.append(k, req.body[k]);
+        bodyToSend = params.toString();
+        contentTypeToSend = 'application/x-www-form-urlencoded';
+      } else {
+        bodyToSend = JSON.stringify(req.body || {});
+        contentTypeToSend = 'application/json';
+      }
+    }
+
+    const forwardHeaders = {};
+    if (contentTypeToSend) forwardHeaders['Content-Type'] = contentTypeToSend;
+    for (const h of ['authorization', 'x-username', 'x-user']) {
+      if (req.headers[h]) forwardHeaders[h] = req.headers[h];
+    }
+    if (req.headers && req.headers.cookie) forwardHeaders['Cookie'] = req.headers.cookie;
+
+    const fetchOpts = { method, headers: forwardHeaders, redirect: 'manual' };
+    if (bodyToSend) fetchOpts.body = bodyToSend;
+
+    const backendRes = await fetch(BACKEND_ORIGIN + backendPath, fetchOpts);
+
+    const setCookie = backendRes.headers.get('set-cookie') || backendRes.headers.get('Set-Cookie');
+    if (setCookie) res.setHeader('Set-Cookie', setCookie);
+
+    if (backendRes.status >= 300 && backendRes.status < 400) {
+      const location = backendRes.headers.get('location') || '/';
+      if (setCookie) res.setHeader('Set-Cookie', setCookie);
+      return res.redirect(location);
+    }
+
+    const text = await backendRes.text();
+    res.status(backendRes.status).send(text);
+  } catch (err) {
+    console.error(`${method} proxy error:`, err);
+    res.status(500).send(`Proxy ${method} error`);
+  }
+}
+
+app.delete('*', async (req, res) => proxyAnyToBackend(req, res, 'DELETE'));
+app.patch('*', async (req, res) => proxyAnyToBackend(req, res, 'PATCH'));
+app.put('*', async (req, res) => proxyAnyToBackend(req, res, 'PUT'));
+
 // Proxy other GET pages (e.g. /profile) to backend so backend-rendered pages work
 app.get('*', async (req, res) => {
   // let static middleware handle assets (css/js/images). If a path looks like a file (has an extension), return 404 here.
@@ -205,6 +262,18 @@ app.get('*', async (req, res) => {
     console.error('GET proxy error:', err);
     return res.status(500).send('Proxy error');
   }
+});
+
+// Client-side theme switch handler: set theme in localStorage then redirect back.
+// This avoids needing to restart the frontend server when backend theme is toggled.
+app.get('/theme/:name', (req, res) => {
+  const name = req.params.name === 'light' ? 'default' : req.params.name;
+  if (!['default', 'dark'].includes(name)) return res.redirect('/');
+
+  // Return a tiny HTML+JS that sets localStorage and navigates back to referer
+  const referer = req.headers.referer || '/';
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Switching theme</title></head><body><script>try{localStorage.setItem('theme','${name}');}catch(e){}window.location='${referer}';</script></body></html>`;
+  res.send(html);
 });
 
 // Run server
