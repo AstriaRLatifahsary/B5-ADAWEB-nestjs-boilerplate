@@ -21,6 +21,8 @@ import { HomeModule } from './home/home.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 import { PostsModule } from './posts/posts.module';
+import { ItemsModule } from './items/items.module';
+import { DevAuthModule } from './dev-auth/dev-auth.module';
 
 // I18N
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
@@ -41,6 +43,9 @@ AreaManager.registerToArea('main', 'socialFeed');
 // Import plugin files
 import './plugins/newPost.plugin';
 import './plugins/socialFeed.plugin';
+
+// Auth module
+import { AuthModule } from './auth/auth.module';
 
 // Database Root Module
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
@@ -103,6 +108,9 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     MailerModule,
     HomeModule,
     PostsModule,
+    ItemsModule,
+    DevAuthModule,
+    AuthModule,
   ],
 
   // 👉 AuthWebController DIDAFTARKAN DI SINI

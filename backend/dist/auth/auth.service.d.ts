@@ -1,0 +1,36 @@
+import { JwtService } from '@nestjs/jwt';
+import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
+import { AuthUpdateDto } from './dto/auth-update.dto';
+import { SocialInterface } from '../social/interfaces/social.interface';
+import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
+import { NullableType } from '../utils/types/nullable.type';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { ConfigService } from '@nestjs/config';
+import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { UsersService } from '../users/users.service';
+import { AllConfigType } from '../config/config.type';
+import { MailService } from '../mail/mail.service';
+import { SessionService } from '../session/session.service';
+import { User } from '../users/domain/user';
+export declare class AuthService {
+    private jwtService;
+    private usersService;
+    private sessionService;
+    private mailService;
+    private configService;
+    constructor(jwtService: JwtService, usersService: UsersService, sessionService: SessionService, mailService: MailService, configService: ConfigService<AllConfigType>);
+    validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto>;
+    validateSocialLogin(authProvider: string, socialData: SocialInterface): Promise<LoginResponseDto>;
+    register(dto: AuthRegisterLoginDto): Promise<void>;
+    confirmEmail(hash: string): Promise<void>;
+    confirmNewEmail(hash: string): Promise<void>;
+    forgotPassword(email: string): Promise<void>;
+    resetPassword(hash: string, password: string): Promise<void>;
+    me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>>;
+    update(userJwtPayload: JwtPayloadType, userDto: AuthUpdateDto): Promise<NullableType<User>>;
+    refreshToken(data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>): Promise<Omit<LoginResponseDto, 'user'>>;
+    softDelete(user: User): Promise<void>;
+    logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>): Promise<void>;
+    private getTokensData;
+}

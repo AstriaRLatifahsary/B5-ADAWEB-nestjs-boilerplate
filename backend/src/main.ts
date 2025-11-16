@@ -4,11 +4,14 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AreaManager } from './common/areaManager';
 import { setupViewEngine } from './common/viewEngine';
 import './plugins';
-import './database/data-source';
+// Note: `database/data-source` is imported by migration/seed scripts when needed.
+// Importing it here caused double initialization and stack overflows in some
+// boot scenarios, so we avoid importing it on app startup.
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,7 +19,7 @@ async function bootstrap() {
   // --- CORS ---
   app.enableCors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
 
@@ -53,6 +56,14 @@ async function bootstrap() {
   AreaManager.registerToArea('main', 'socialFeed');
 
   (global as any).AreaManager = AreaManager;
+
+  // --- VALIDATION PIPE (class-validator / class-transformer) ---
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   const port = Number(process.env.PORT) || 3000;
   await app.listen(port);
